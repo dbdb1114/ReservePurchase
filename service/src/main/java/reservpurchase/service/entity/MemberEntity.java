@@ -7,12 +7,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import reservpurchase.service.entity.embeded.Address;
 
 @Data
 @Entity
 @Table(name = "MEMBER")
+@NoArgsConstructor
+@AllArgsConstructor
 public class MemberEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,11 +1,11 @@
 package reservpurchase.service.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import reservpurchase.service.entity.embeded.Address;
 
 @Data
+@NoArgsConstructor
 public class MemberDto {
     private Long id;
     private String email;
