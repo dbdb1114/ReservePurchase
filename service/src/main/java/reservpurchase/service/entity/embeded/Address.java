@@ -12,5 +12,5 @@ import lombok.RequiredArgsConstructor;
 public class Address {
 
     private String city;
-    private String detail;
+    private String detailAddress;
 }
