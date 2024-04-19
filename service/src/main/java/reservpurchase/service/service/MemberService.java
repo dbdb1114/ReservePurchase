@@ -5,4 +5,5 @@ import reservpurchase.service.dto.MemberDto;
 
 public interface MemberService extends UserDetailsService {
     MemberDto join(MemberDto memberDto);
+    boolean isDuple(MemberDto memberDto);
 }
