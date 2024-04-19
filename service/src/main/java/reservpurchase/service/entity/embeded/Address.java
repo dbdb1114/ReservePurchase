@@ -1,0 +1,14 @@
+package reservpurchase.service.entity.embeded;
+
+import jakarta.persistence.Embeddable;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+@Data
+@Embeddable
+@RequiredArgsConstructor
+public class Address {
+
+    private String city;
+    private String detail;
+}
