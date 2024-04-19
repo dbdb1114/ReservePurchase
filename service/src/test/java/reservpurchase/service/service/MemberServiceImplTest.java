@@ -28,7 +28,7 @@ class MemberServiceImplTest {
 
         //then
         assertThat(savedDto.getEmail()).isEqualTo(memberDto.getEmail());
-        assertThat(savedDto.getUsername()).isEqualTo(memberDto.getUsername());
+        assertThat(savedDto.getName()).isEqualTo(memberDto.getName());
         assertThat(savedDto.getPassword()).isEqualTo(memberDto.getPassword());
         assertThat(savedDto.getAddress()).isNull();
     }
@@ -45,7 +45,7 @@ class MemberServiceImplTest {
 
         //then
         assertThat(savedDto.getEmail()).isEqualTo(memberDto.getEmail());
-        assertThat(savedDto.getUsername()).isEqualTo(memberDto.getUsername());
+        assertThat(savedDto.getName()).isEqualTo(memberDto.getName());
         assertThat(savedDto.getPassword()).isEqualTo(memberDto.getPassword());
         assertThat(savedDto.getAddress().getCity()).isEqualTo(address.getCity());
         assertThat(savedDto.getAddress().getDetail()).isEqualTo(address.getDetail());

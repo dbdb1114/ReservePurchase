@@ -26,7 +26,7 @@ public class MemberEntity {
     @Column(nullable = false, length = 50, unique = true)
     private String email; // 이메일
     @Column(nullable = false, length = 50)
-    private String username; // 이름
+    private String name; // 이름
     @Column(nullable = false, unique = true)
     private String password; // 비밀번호
 
