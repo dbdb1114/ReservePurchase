@@ -5,5 +5,10 @@ import reservpurchase.service.dto.MemberDto;
 
 public interface MemberService extends UserDetailsService {
     MemberDto join(MemberDto memberDto);
-    boolean isDuple(MemberDto memberDto);
+    boolean existsByEmail(String email);
+    boolean existsByPhone(String phone);
+
+    MemberDto tempJoin(MemberDto memberDto);
+
+    MemberDto getUserDetailsByEmail(String email);
 }
