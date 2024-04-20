@@ -1,6 +1,8 @@
 package reservpurchase.service.util.encrypt;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reservpurchase.service.dto.MemberDto;
 import reservpurchase.service.entity.embeded.Address;
@@ -12,6 +14,10 @@ public class MemberEncryptManager extends EncryptManager {
      * MemberEncryptManager 또한 생성자를 만들 필요 없으므로
      * 아래와 같이 활용
      * */
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return this.passwordEncoder;
+    }
     public MemberEncryptManager(Environment env) {super(env);}
 
     public String encodePassword(String plainPassword){
@@ -20,7 +26,6 @@ public class MemberEncryptManager extends EncryptManager {
 
     public MemberDto encodeAll(MemberDto memberDto) {
 
-        try{
             memberDto.setEmail(infoEncode(memberDto.getEmail()));
             memberDto.setName(infoEncode(memberDto.getName()));
             memberDto.setPassword(encodePassword(memberDto.getPassword()));
@@ -32,16 +37,12 @@ public class MemberEncryptManager extends EncryptManager {
                 address.setDetailAddress(infoEncode(address.getDetailAddress()));
             }
 
-        } catch (Exception e){
-            handleEncodeException(e);
-        }
 
         return memberDto;
     }
 
     public MemberDto decodeAll(MemberDto memberDto) {
 
-        try{
             memberDto.setEmail(infoDecode(memberDto.getEmail()));
             memberDto.setName(infoDecode(memberDto.getName()));
 
@@ -51,15 +52,9 @@ public class MemberEncryptManager extends EncryptManager {
                 address.setDetailAddress(infoEncode(address.getDetailAddress()));
             }
 
-        } catch (Exception e){
-            handleEncodeException(e);
-        }
 
         return memberDto;
     }
 
-    private void handleEncodeException(Exception e) {
-        System.out.println(e.getMessage());
-    }
 
 }

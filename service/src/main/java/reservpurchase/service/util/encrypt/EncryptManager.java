@@ -1,17 +1,9 @@
 package reservpurchase.service.util.encrypt;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,26 +21,40 @@ public class EncryptManager {
         iv = env.getProperty("encrypt.iv");
     }
 
-    protected static String infoEncode(String plainText)
-            throws NoSuchPaddingException, NoSuchAlgorithmException, UnsupportedEncodingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance(alg);
-        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
-        IvParameterSpec ivParamSpec = new IvParameterSpec(iv.getBytes());
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParamSpec);
-
-        byte[] encrypted = cipher.doFinal(plainText.getBytes("UTF-8"));
-        return Base64.getEncoder().encodeToString(encrypted);
+    public String infoEncode(String plainText) {
+        try {
+            Cipher cipher = Cipher.getInstance(alg);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
+            IvParameterSpec ivParamSpec = new IvParameterSpec(iv.getBytes());
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParamSpec);
+            byte[] encrypted = cipher.doFinal(plainText.getBytes("UTF-8"));
+            return Base64.getEncoder().encodeToString(encrypted);
+        } catch (Exception e){
+            e.printStackTrace();
+            return handleEncodeException(e);
+        }
     }
 
-    protected static String infoDecode(String encoded)
-            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
-        Cipher cipher = Cipher.getInstance(alg);
-        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
-        IvParameterSpec ivParamSpec = new IvParameterSpec(iv.getBytes());
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParamSpec);
+    public String infoDecode(String encoded) {
+        try{
+            Cipher cipher = Cipher.getInstance(alg);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
+            IvParameterSpec ivParamSpec = new IvParameterSpec(iv.getBytes());
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParamSpec);
+            byte[] decodedBytes = Base64.getDecoder().decode(encoded);
+            byte[] decrypted = cipher.doFinal(decodedBytes);
+            return new String(decrypted, "UTF-8");
 
-        byte[] decodedBytes = Base64.getDecoder().decode(encoded);
-        byte[] decrypted = cipher.doFinal(decodedBytes);
-        return new String(decrypted, "UTF-8");
+        } catch (Exception e){
+            e.printStackTrace();
+            return handleEncodeException(e);
+        }
+
+    }
+
+
+    private String handleEncodeException(Exception e) {
+        System.out.println(e.getMessage());
+        return "fail";
     }
 }
