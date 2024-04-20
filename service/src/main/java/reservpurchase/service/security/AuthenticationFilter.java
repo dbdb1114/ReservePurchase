@@ -31,6 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 
+
     private MemberService memberService;
     private Environment env;
 

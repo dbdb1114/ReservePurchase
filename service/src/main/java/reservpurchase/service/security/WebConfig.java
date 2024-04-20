@@ -38,6 +38,7 @@ public class WebConfig {
         http.addFilter(getAuthenticationFilter(authenticationManager));
         http.headers(custom->custom.disable());
 
+
         return http.build();
     }
 
