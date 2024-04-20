@@ -20,6 +20,7 @@ public class MemberDto {
     private String password;
     private String phone;
     private Address address;
+    private String certificationNumber;
 
     public MemberDto(String email, String name, String password, String phone, Address address) {
         this.email = email;
