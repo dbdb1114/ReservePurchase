@@ -1,28 +1,54 @@
 spring:
   application:
     name: service
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
-      path: /h2-console
   datasource:
-    driver-class-name: org.h2.Driver
-#    url: jdbc:h2:~/inflearn_spring/h2/bin/hang-hae
-    url: jdbc:h2:tcp://localhost/~/inflearn_spring/h2/bin/hang-hae
-    username: sa
-    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:13306/test?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: Tlmm3PjdJ*
   jpa:
     generate-ddl: true
     show-sql: true # ????? ?????
     properties:
       hibernate:
-        ddl-auto: drop-create
-        format_sql: true # SQL ???
-        highlight_sql: true # ANSI ??? ?? ????
-        use_sql_comments: true # SQL ??? /* */ ?? ??
+        ddl-auto: create-drop
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+  # Gmail ??
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: dbwjdgus1114@gmail.com
+    password: lkmnzlbqeprvsmkd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000
+
 logging:
   level:
     org.hibernate.sql: debug
     org.hibernate.type.descriptor.sql: trace
+
+
+encrypt:
+  alg: AES/CBC/PKCS5Padding
+  key: abcdefghabcdefghabcdefghabcdefgh
+  iv: 0123456789abcdef
+
+token:
+  expiration_time: 86400000
+  secret: '01234567890123456789012345678901234567890123456789'
