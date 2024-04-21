@@ -1,13 +1,14 @@
 package reservpurchase.service.service;
 
+import static reservpurchase.service.util.email.EmailProvider.getCertificationNumber;
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 import reservpurchase.service.dto.MemberDto;
 import reservpurchase.service.entity.MemberRedisEntity;
 import reservpurchase.service.repository.MemberRedisRepository;
-import reservpurchase.service.util.EmailProvider;
+import reservpurchase.service.util.email.EmailProvider;
 import reservpurchase.service.vo.request.EmailCertificationRequestVo;
 
 @Service
@@ -42,12 +43,5 @@ public class AuthServiceImpl implements AuthService{
         return null;
     }
 
-    private static String getCertificationNumber(){
 
-        String certificationNumber = "";
-
-        for (int i = 0; i < 4; i++) certificationNumber += (int) (Math.random() * 10);
-
-        return certificationNumber;
-    }
 }

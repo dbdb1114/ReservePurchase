@@ -1,4 +1,4 @@
-package reservpurchase.service.util;
+package reservpurchase.service.util.email;
 
 import jakarta.mail.internet.MimeMessage;
 import javax.security.auth.Subject;
@@ -42,5 +42,15 @@ public class EmailProvider {
         certificationMessage += "<h3 style='text-align: center;'>인증 코드 : <strong style='font-size: 32px; letter-spacing: 8px'>"
                 +certificationNumber + "</strong></h3>";
         return certificationMessage;
+    }
+
+
+    public static String getCertificationNumber(){
+
+        String certificationNumber = "";
+
+        for (int i = 0; i < 4; i++) certificationNumber += (int) (Math.random() * 10);
+
+        return certificationNumber;
     }
 }

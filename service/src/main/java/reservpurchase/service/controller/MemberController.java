@@ -19,6 +19,7 @@ import reservpurchase.service.service.AuthService;
 import reservpurchase.service.service.MemberService;
 import reservpurchase.service.vo.request.EmailCertificationRequestVo;
 import reservpurchase.service.vo.request.RequestMember;
+import reservpurchase.service.vo.response.ResponseMember;
 import reservpurchase.service.vo.response.auth.EmailAuthStatus;
 import reservpurchase.service.vo.response.auth.JoinStatus;
 import reservpurchase.service.vo.response.auth.ResponseVo;
@@ -67,6 +68,13 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JoinStatus.FA.responseVo);
         }
         return ResponseEntity.status(HttpStatus.OK).body(JoinStatus.SU.responseVo);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ResponseMember> updateMember(@RequestBody RequestMember requestMember){
+        MemberDto memberDto = modelMapper.map(requestMember, MemberDto.class);
+        ResponseMember updateMember = memberService.updateMember(memberDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updateMember);
     }
 
 }
