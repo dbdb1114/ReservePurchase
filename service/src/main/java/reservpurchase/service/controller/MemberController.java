@@ -31,6 +31,7 @@ public class MemberController {
 
     MemberService memberService;
     AuthService authService;
+    ModelMapper modelMapper;
 
     @GetMapping("/welcome")
     public String welcome(){
@@ -39,8 +40,6 @@ public class MemberController {
 
     @PutMapping("/join")
     public ResponseEntity<ResponseVo> join(@RequestBody @Valid RequestMember member) {
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         if (memberService.existsByEmail(member.getEmail())){
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(JoinStatus.DE.responseVo);
@@ -48,7 +47,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(JoinStatus.DP.responseVo);
         }
 
-        MemberDto memberDto = mapper.map(member, MemberDto.class);
+        MemberDto memberDto = modelMapper.map(member, MemberDto.class);
         String certificationNumber = authService.emailCertification(member.getEmail());
 
         if(certificationNumber.length() > 2){
