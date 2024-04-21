@@ -10,7 +10,7 @@ import reservpurchase.service.vo.response.auth.ResponseVo;
 public class ResponseMember extends ResponseVo {
     private String email;
     private String name;
-    private String pwd;
+    private String password;
     private String phone;
     private Address address;
 }
