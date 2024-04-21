@@ -7,12 +7,16 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reservpurchase.service.dto.MemberDto;
 import reservpurchase.service.entity.MemberEntity;
 import reservpurchase.service.entity.MemberRedisEntity;
 import reservpurchase.service.repository.MemberRedisRepository;
 import reservpurchase.service.repository.MemberRepository;
 import reservpurchase.service.util.encrypt.EncryptManager;
+import reservpurchase.service.vo.request.RequestMember;
+import reservpurchase.service.vo.response.ResponseMember;
+import reservpurchase.service.vo.response.auth.ResponseVo;
 
 @Slf4j
 @Service
@@ -43,15 +47,32 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @Transactional
+    public ResponseMember updateMember(MemberDto memberDto) {
+        String email = EncryptManager.infoEncode(memberDto.getEmail());
+        MemberEntity entity = memberRepository.findByEmail(email);
+
+        log.info("entity : {}",entity);
+
+        if(entity != null){
+            // 변경사항 영속화
+            // 수정된 Dto를 암호화 하여 영속화 하여 저장시키고,
+            memberDto.encodeAll();
+            entity.update(memberDto);
+            memberDto.decodeAll();
+        }
+
+        log.info("entity : {}",entity);
+        return modelMapper.map(memberDto, ResponseMember.class);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         MemberEntity memberEntity = memberRepository.findByEmail(EncryptManager.infoEncode(email));
         if(memberEntity == null){
             throw new UsernameNotFoundException(email);
         }
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-        return mapper.map(memberEntity,MemberDto.class).getUser();
+        return modelMapper.map(memberEntity,MemberDto.class).getUser();
     }
 
     @Override
