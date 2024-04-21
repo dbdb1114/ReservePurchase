@@ -4,24 +4,20 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 public class EncryptManager {
 
-    private static String alg;
-    private static String key; // 32byte
-    private static String iv; // 16byte
-    protected static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    protected EncryptManager(Environment env) {
-        alg = env.getProperty("encrypt.alg");
-        key = env.getProperty("encrypt.key");
-        iv = env.getProperty("encrypt.iv");
-    }
+    private static String alg = "AES/CBC/PKCS5Padding";
+    private static String key = "abcdefghabcdefghabcdefghabcdefgh"; // 32byte
+    private static String iv = "0123456789abcdef"; // 16byte
 
-    public String infoEncode(String plainText) {
+    public static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public static String infoEncode(String plainText) {
         try {
             Cipher cipher = Cipher.getInstance(alg);
             SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
@@ -35,7 +31,7 @@ public class EncryptManager {
         }
     }
 
-    public String infoDecode(String encoded) {
+    public static String infoDecode(String encoded) {
         try{
             Cipher cipher = Cipher.getInstance(alg);
             SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
@@ -53,7 +49,7 @@ public class EncryptManager {
     }
 
 
-    private String handleEncodeException(Exception e) {
+    private static String handleEncodeException(Exception e) {
         System.out.println(e.getMessage());
         return "fail";
     }

@@ -8,12 +8,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import reservpurchase.service.entity.embeded.Address;
 
-@Data
 @Entity
+@Builder
+@ToString
 @Table(name = "MEMBER")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,4 +36,8 @@ public class MemberEntity {
 
     @Embedded
     private Address address;
+
+    public String getEmail() {
+        return this.email;
+    }
 }

@@ -4,4 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 import reservpurchase.service.entity.MemberRedisEntity;
 
 public interface MemberRedisRepository extends CrudRepository<MemberRedisEntity,String> {
+    MemberRedisEntity findByEmail(String asdfasdf);
 }

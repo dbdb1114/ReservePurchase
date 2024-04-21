@@ -14,9 +14,9 @@ import reservpurchase.service.vo.request.EmailCertificationRequestVo;
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService{
 
-
     private EmailProvider emailProvider;
     private MemberRedisRepository memberRedisRepository;
+    private ModelMapper modelMapper;
 
     @Override
     public String emailCertification(String email) {
@@ -36,12 +36,10 @@ public class AuthServiceImpl implements AuthService{
     public MemberDto certificate(EmailCertificationRequestVo emailCertificationRequestVo) {
         MemberRedisEntity memberRedisEntity = memberRedisRepository
                 .findById(emailCertificationRequestVo.getEmail()).get();
-        if(memberRedisEntity.getCertificationNumber().equals(emailCertificationRequestVo.getNumber())){
-            return null;
+        if(memberRedisEntity.certification(emailCertificationRequestVo.getNumber())){
+            return modelMapper.map(memberRedisEntity, MemberDto.class);
         }
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return mapper.map(memberRedisEntity, MemberDto.class);
+        return null;
     }
 
     private static String getCertificationNumber(){
