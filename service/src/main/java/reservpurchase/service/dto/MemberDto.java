@@ -2,11 +2,15 @@ package reservpurchase.service.dto;
 
 import java.util.ArrayList;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.userdetails.User;
 import reservpurchase.service.entity.embeded.Address;
 import reservpurchase.service.util.encrypt.EncryptManager;
 
+@Getter
+@ToString
 @EqualsAndHashCode
 @NoArgsConstructor
 public class MemberDto{
@@ -80,7 +84,7 @@ public class MemberDto{
         }
     }
 
-    private void decodeAll(){
+    public void decodeAll(){
         this.email = EncryptManager.infoDecode(this.email);
         this.name = EncryptManager.infoDecode(this.name);
 
