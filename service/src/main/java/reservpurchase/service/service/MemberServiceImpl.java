@@ -1,11 +1,9 @@
 package reservpurchase.service.service;
 
-import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,7 @@ import reservpurchase.service.entity.MemberEntity;
 import reservpurchase.service.entity.MemberRedisEntity;
 import reservpurchase.service.repository.MemberRedisRepository;
 import reservpurchase.service.repository.MemberRepository;
-import reservpurchase.service.util.encrypt.MemberEncryptManager;
+import reservpurchase.service.util.encrypt.EncryptManager;
 
 @Slf4j
 @Service
@@ -22,16 +20,12 @@ import reservpurchase.service.util.encrypt.MemberEncryptManager;
 public class MemberServiceImpl implements MemberService{
 
     private MemberRedisRepository memberRedisRepository;
-    private MemberEncryptManager memberEncryptor;
     private MemberRepository memberRepository;
-
+    private ModelMapper modelMapper;
 
     @Override
     public MemberDto join(MemberDto memberDto){
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-        memberEncryptor.encodeAll(memberDto);
+        memberDto.encodeAll();
 
         MemberEntity memberEntity = modelMapper.map(memberDto, MemberEntity.class);
         MemberEntity save = memberRepository.save(memberEntity);
@@ -42,9 +36,6 @@ public class MemberServiceImpl implements MemberService{
     }
 
     public MemberDto tempJoin(MemberDto memberDto){
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
         MemberRedisEntity mEntity = modelMapper.map(memberDto, MemberRedisEntity.class);
         memberRedisRepository.save(mEntity);
         MemberDto savedDto = modelMapper.map(mEntity, MemberDto.class);
@@ -52,30 +43,32 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        MemberEntity memberEntity = memberRepository.findByEmail(memberEncryptor.infoEncode(username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        MemberEntity memberEntity = memberRepository.findByEmail(EncryptManager.infoEncode(email));
         if(memberEntity == null){
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException(email);
         }
-        return new User(memberEntity.getEmail(), memberEntity.getPassword(),
-                true,true,true,true,
-                new ArrayList<>());
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        return mapper.map(memberEntity,MemberDto.class).getUser();
     }
+
     @Override
     public MemberDto getUserDetailsByEmail(String email) {
-        MemberEntity userEntity = memberRepository.findByEmail(email);
+        MemberEntity memberEntity = memberRepository.findByEmail(email);
 
-        if(userEntity == null){
+        if(memberEntity == null){
             throw new UsernameNotFoundException(email);
         }
 
-        MemberDto memberDto = new ModelMapper().map(userEntity, MemberDto.class);
+        MemberDto memberDto = new ModelMapper().map(memberEntity, MemberDto.class);
         return memberDto;
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        email = memberEncryptor.infoEncode(email);
+        email = EncryptManager.infoEncode(email);
         return memberRepository.existsByEmail(email);
     }
 
