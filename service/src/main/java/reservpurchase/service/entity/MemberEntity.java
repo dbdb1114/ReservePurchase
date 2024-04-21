@@ -55,7 +55,7 @@ public class MemberEntity {
                 member.getPhone() : this.phone;
     }
 
-    private String isUpdate(String a1, String b1){
+    private static String isUpdate(String a1, String b1){
         if(b1 != null && !a1.equals(b1)){
             return b1;
         }
