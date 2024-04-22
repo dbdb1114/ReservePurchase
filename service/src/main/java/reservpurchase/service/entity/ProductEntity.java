@@ -23,6 +23,8 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "category_id")
+    private Integer categoryId;
     @Column(nullable = false, unique = true)
     private String name;
     @Column(nullable = false)
