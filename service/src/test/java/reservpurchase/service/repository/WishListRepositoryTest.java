@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reservpurchase.service.entity.ProductEntity;
 import reservpurchase.service.entity.WishListEntity;
 
 @SpringBootTest
@@ -20,7 +21,7 @@ class WishListRepositoryTest {
         //given
         WishListEntity wishListEntity = WishListEntity.builder()
                 .memberId(1L)
-                .productId(1L)
+                .product(ProductEntity.builder().id(1L).build())
                 .count(1)
                 .build();
 
