@@ -1,9 +1,11 @@
 package reservpurchase.service.service;
 
-import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import reservpurchase.service.dto.Paging;
 import reservpurchase.service.dto.ProductDto;
 import reservpurchase.service.entity.ProductEntity;
 import reservpurchase.service.repository.ProductRepository;
@@ -18,6 +20,14 @@ public class ProductServiceImpl implements ProductService{
     public ProductServiceImpl(ProductRepository productRepository, ModelMapper modelMapper) {
         this.productRepository = productRepository;
         this.modelMapper = modelMapper;
+    }
+
+    @Override
+    public Page<ProductDto> productList(int categoryId, Paging paging) {
+        PageRequest pageRequest = paging.getPageRequest();
+        Page<ProductEntity> allByCategoryId = productRepository.findAllByCategoryId(categoryId, pageRequest);
+        Page<ProductDto> dtoPage = allByCategoryId.map(x -> modelMapper.map(x, ProductDto.class));
+        return dtoPage;
     }
 
     @Override
