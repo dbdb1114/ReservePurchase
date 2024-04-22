@@ -1,10 +1,12 @@
 package reservpurchase.service.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import reservpurchase.service.dto.Paging;
 import reservpurchase.service.dto.ProductDto;
 
 public interface ProductService {
 
-    public ProductDto productDetail(Long id);
+     Page<ProductDto> productList(int categoryId, Paging paging);
+     ProductDto productDetail(Long id);
 
 }
