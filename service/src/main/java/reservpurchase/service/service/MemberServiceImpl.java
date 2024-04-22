@@ -1,9 +1,9 @@
 package reservpurchase.service.service;
 
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -14,9 +14,7 @@ import reservpurchase.service.entity.MemberRedisEntity;
 import reservpurchase.service.repository.MemberRedisRepository;
 import reservpurchase.service.repository.MemberRepository;
 import reservpurchase.service.util.encrypt.EncryptManager;
-import reservpurchase.service.vo.request.RequestMember;
 import reservpurchase.service.vo.response.ResponseMember;
-import reservpurchase.service.vo.response.auth.ResponseVo;
 
 @Slf4j
 @Service
@@ -52,8 +50,6 @@ public class MemberServiceImpl implements MemberService{
         String email = EncryptManager.infoEncode(memberDto.getEmail());
         MemberEntity entity = memberRepository.findByEmail(email);
 
-        log.info("entity : {}",entity);
-
         if(entity != null){
             // 변경사항 영속화
             // 수정된 Dto를 암호화 하여 영속화 하여 저장시키고,
@@ -62,8 +58,12 @@ public class MemberServiceImpl implements MemberService{
             memberDto.decodeAll();
         }
 
-        log.info("entity : {}",entity);
         return modelMapper.map(memberDto, ResponseMember.class);
+    }
+
+    public Long findIdByEmail(String email){
+        Long idByEmail = memberRepository.findIdByEmail(email);
+        return idByEmail;
     }
 
     @Override

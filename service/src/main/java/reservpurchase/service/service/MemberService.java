@@ -7,12 +7,12 @@ import reservpurchase.service.vo.response.auth.ResponseVo;
 
 public interface MemberService extends UserDetailsService {
     MemberDto join(MemberDto memberDto);
+    MemberDto tempJoin(MemberDto memberDto);
+    ResponseMember updateMember(MemberDto memberDto);
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
-
-    MemberDto tempJoin(MemberDto memberDto);
+    Long findIdByEmail(String email);
 
     MemberDto getUserDetailsByEmail(String email);
 
-    ResponseMember updateMember(MemberDto memberDto);
 }
