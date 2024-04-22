@@ -2,8 +2,10 @@ package reservpurchase.service.controller;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Null;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,7 @@ import reservpurchase.service.service.ProductService;
 import reservpurchase.service.vo.response.ResponseProduct;
 
 @RestController
+@NoArgsConstructor
 @RequestMapping("/product-service")
 public class ProductController {
 
@@ -27,6 +30,17 @@ public class ProductController {
     public ProductController(ProductService productService, ModelMapper modelMapper) {
         this.productService = productService;
         this.modelMapper = modelMapper;
+    }
+
+    @GetMapping("/{categoryId}/list")
+    public ResponseEntity productList(@PathVariable Integer categoryId, @RequestBody @Nullable Paging paging){
+        Page<ProductDto> productDtos = productService.productList(categoryId, paging);
+
+        if(productDtos.getContent().size() > 0){
+            return ResponseEntity.status(HttpStatus.OK).body(productDtos);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("{}");
+        }
     }
 
     @GetMapping("/detail/{productId}")
