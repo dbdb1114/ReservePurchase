@@ -13,10 +13,14 @@ public class WishListDto {
     private Long id;
     private Long memberId;
     private ProductDto product;
-    private Integer count;
+    private Integer quantity;
 
-    public Integer getCount(){
-        return this.count;
+    public Integer getQuantity(){
+        return this.quantity;
+    }
+
+    public Long getId() {
+        return this.id;
     }
 
     @Override
@@ -24,7 +28,7 @@ public class WishListDto {
         return "WishListDto{" +
                 "id=" + id +
                 ", memberId=" + memberId +
-                ", count=" + count +
+                ", count=" + quantity +
                 '}';
     }
 }

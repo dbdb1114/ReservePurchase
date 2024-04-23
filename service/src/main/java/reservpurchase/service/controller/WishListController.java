@@ -1,7 +1,9 @@
 package reservpurchase.service.controller;
 
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import reservpurchase.service.dto.ProductDto;
 import reservpurchase.service.dto.WishListDto;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +23,40 @@ public class WishListController {
 
     MemberService memberService;
     WishListService wishListService;
-    @PutMapping("/add")
-    public ResponseEntity addWishList(@RequestBody RequestWishList request){
+    ModelMapper modelMapper;
 
-        Long memberId = memberService.findIdByEmail(EncryptManager.infoEncode(request.getEmail()));
+    @PutMapping("/add")
+    public ResponseEntity addWishList(@RequestBody RequestWishList requestWishList){
+
+        Long memberId = memberService.findIdByEmail(EncryptManager.infoEncode(requestWishList.getEmail()));
         WishListDto wishListDto = WishListDto.builder()
                 .memberId(memberId)
-                .product(ProductDto.builder().id(request.getProductId()).build())
-                .count(request.getCount())
+                .product(ProductDto.builder().id(requestWishList.getProductId()).build())
+                .quantity(requestWishList.getQuantity())
                 .build();
         WishListDto savedDto = wishListService.addProduct(wishListDto);
 
         if(savedDto != null){
-            return ResponseEntity.status(HttpStatus.OK).body(savedDto.getCount());
+            return ResponseEntity.status(HttpStatus.OK).body(savedDto);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fail");
         }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity deleteWishList(@RequestBody RequestWishList requestWishList){
+        Boolean result = wishListService.delete(requestWishList.getId());
+        if(result){
+            return ResponseEntity.status(HttpStatus.OK).body("SU");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("FA");
+        }
+    }
+
+    @PutMapping("/change-quantity")
+    public ResponseEntity changeQuantity(@RequestBody RequestWishList requestWishList){
+        WishListDto dto = modelMapper.map(requestWishList, WishListDto.class);
+        wishListService.changeQuantity(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 }

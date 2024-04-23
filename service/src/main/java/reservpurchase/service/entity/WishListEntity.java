@@ -27,6 +27,9 @@ public class WishListEntity {
     @OneToOne
     @JoinColumn(name = "PRODUCT_ID")
     private ProductEntity product;
-    private Integer count;
+    private Integer quantity;
+    public void updateQuantity(int quantity){
+        this.quantity = quantity;
+    }
 
 }
