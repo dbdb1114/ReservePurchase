@@ -1,0 +1,15 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: discovery
+eureka:
+  client:
+    ## 나 자신은 등록하지 않음
+    register-with-eureka: false
+    ## 마이크로 서비스 인스턴스 목록을 로컬에 캐시할지 여부
+    fetch-registry: false
+    ## 아래 설정이 없으면 에러
+    service-url:
+      defaultZone: http://discovery-api:8888

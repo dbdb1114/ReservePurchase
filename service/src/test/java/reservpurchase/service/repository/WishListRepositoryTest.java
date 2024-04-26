@@ -22,7 +22,7 @@ class WishListRepositoryTest {
         WishListEntity wishListEntity = WishListEntity.builder()
                 .memberId(1L)
                 .product(ProductEntity.builder().id(1L).build())
-                .count(1)
+                .quantity(1)
                 .build();
 
         //when

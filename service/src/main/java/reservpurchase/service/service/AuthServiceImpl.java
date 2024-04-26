@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public MemberDto certificate(EmailCertificationRequestVo emailCertificationRequestVo) {
         MemberRedisEntity memberRedisEntity = memberRedisRepository
-                .findById(emailCertificationRequestVo.getEmail()).get();
+                .findById(emailCertificationRequestVo.getEmail()).get;
         if(memberRedisEntity.certification(emailCertificationRequestVo.getNumber())){
             return modelMapper.map(memberRedisEntity, MemberDto.class);
         }

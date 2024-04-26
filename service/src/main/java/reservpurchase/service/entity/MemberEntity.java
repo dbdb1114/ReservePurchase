@@ -3,30 +3,30 @@ package reservpurchase.service.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import reservpurchase.service.dto.MemberDto;
 import reservpurchase.service.entity.embeded.Address;
-import reservpurchase.service.vo.request.RequestMember;
 
 @Entity
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "MEMBER")
 public class MemberEntity {
 
     @Id
+    @Column(name = "MEMBER_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -41,6 +41,13 @@ public class MemberEntity {
 
     @Embedded
     private Address address;
+
+    @Builder.Default
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<OrderEntity> orders = new ArrayList<OrderEntity>();
+
+    @OneToOne
+    WishListEntity wishListEntity;
 
     public String getEmail() {
         return this.email;
