@@ -30,13 +30,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 
-    private MemberService memberService;
     private Environment env;
     private final Key key;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager, MemberService memberService, Environment env) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, Environment env) {
         super.setAuthenticationManager(authenticationManager);
-        this.memberService = memberService;
         this.env = env;
         byte[] keyBytes = Decoders.BASE64.decode(env.getProperty("token.secret"));
         this.key = Keys.hmacShaKeyFor(keyBytes);
