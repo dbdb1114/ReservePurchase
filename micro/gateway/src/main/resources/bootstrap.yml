@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      uri: http://config-api:8118
+      name: gateway
+  profiles:
+    active: dev

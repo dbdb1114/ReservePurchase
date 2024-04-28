@@ -34,7 +34,10 @@ public class WebConfig {
 
         http.csrf(config->config.disable());
         http.authorizeHttpRequests(custom->custom.requestMatchers("/member-service/join/email-certify").permitAll()
-                .requestMatchers("/member-service/join").permitAll());
+                .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/member-service/join").permitAll()
+                .requestMatchers("/login").authenticated()
+                .anyRequest().permitAll());
 
         http.addFilter(getAuthenticationFilter(authenticationManager));
         http.headers(custom->custom.disable());

@@ -21,6 +21,7 @@ public class WishListEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @JoinColumn(name = "MEMBER_ID")
     private Long memberId;
 

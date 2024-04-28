@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import reservpurchase.service.dto.ProductDto;
 import reservpurchase.service.dto.WishListDto;
 import org.springframework.http.ResponseEntity;
+import reservpurchase.service.entity.WishListEntity;
 import reservpurchase.service.service.MemberService;
 import reservpurchase.service.service.WishListService;
 import reservpurchase.service.vo.request.RequestWishList;
@@ -41,6 +44,14 @@ public class WishListController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fail");
         }
+    }
+
+    @GetMapping("/select/{wishId}")
+    public ResponseEntity<WishListDto> selectWish(@PathVariable("wishId") Long wishId){
+        WishListEntity body = wishListService.selectWish(wishId);
+        WishListDto map = modelMapper.map(body, WishListDto.class);
+        System.out.println("body = " + body);
+        return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 
     @DeleteMapping("/delete")
