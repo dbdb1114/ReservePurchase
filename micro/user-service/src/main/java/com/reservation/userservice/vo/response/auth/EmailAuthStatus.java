@@ -10,7 +10,6 @@ public enum EmailAuthStatus {
         this.responseVo.setResponseMessage(message);
     }
 
-    public String certificateNumber;
     public ResponseVo responseVo = new ResponseVo();
 
 }

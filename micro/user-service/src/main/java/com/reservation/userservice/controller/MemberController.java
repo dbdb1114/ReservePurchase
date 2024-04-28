@@ -3,12 +3,14 @@ package com.reservation.userservice.controller;
 import com.reservation.userservice.dto.MemberDto;
 import com.reservation.userservice.service.AuthService;
 import com.reservation.userservice.service.MemberService;
+import com.reservation.userservice.temp.JWTutil;
 import com.reservation.userservice.vo.request.EmailCertificationRequestVo;
 import com.reservation.userservice.vo.request.RequestMember;
 import com.reservation.userservice.vo.response.ResponseMember;
 import com.reservation.userservice.vo.response.auth.EmailAuthStatus;
 import com.reservation.userservice.vo.response.auth.JoinStatus;
 import com.reservation.userservice.vo.response.auth.ResponseVo;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -30,6 +31,7 @@ public class MemberController {
     MemberService memberService;
     AuthService authService;
     ModelMapper modelMapper;
+    JWTutil jwtUil;
 
     @GetMapping("/welcome")
     public String welcome(){
@@ -65,6 +67,15 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JoinStatus.FA.responseVo);
         }
         return ResponseEntity.status(HttpStatus.OK).body(JoinStatus.SU.responseVo);
+    }
+
+    @PostMapping("/user-info")
+    public ResponseEntity<ResponseMember> user(HttpServletRequest request){
+        String token = request.getHeader("Authorization").replace("Bearer ","");
+        String email = jwtUil.getEmail(token);
+        MemberDto userInfo = memberService.findMemberByEmail(email);
+        ResponseMember responseMember = modelMapper.map(userInfo, ResponseMember.class);
+        return ResponseEntity.status(HttpStatus.OK).body(responseMember);
     }
 
     @PutMapping("/update")
