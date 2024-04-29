@@ -61,7 +61,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     public Long findIdByEmail(String email){
-        Long idByEmail = memberRepository.findIdByEmail(email);
+        Long idByEmail = memberRepository.findIdByEmail(EncryptManager.infoEncode(email));
         return idByEmail;
     }
 
