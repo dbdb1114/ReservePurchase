@@ -1,19 +1,23 @@
 package com.reservation.userservice.controller;
 
 import com.reservation.userservice.dto.MemberDto;
+import com.reservation.userservice.feign.WishClient;
 import com.reservation.userservice.service.AuthService;
 import com.reservation.userservice.service.MemberService;
 import com.reservation.userservice.temp.JWTutil;
-import com.reservation.userservice.vo.request.EmailCertificationRequestVo;
+import com.reservation.userservice.vo.request.auth.EmailCertificationRequestVo;
 import com.reservation.userservice.vo.request.RequestMember;
 import com.reservation.userservice.vo.response.ResponseMember;
+import com.reservation.userservice.vo.response.ResponseWishList;
 import com.reservation.userservice.vo.response.auth.EmailAuthStatus;
 import com.reservation.userservice.vo.response.auth.JoinStatus;
-import com.reservation.userservice.vo.response.auth.ResponseVo;
+import com.reservation.userservice.vo.response.ResponseVo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +34,9 @@ public class MemberController {
 
     MemberService memberService;
     AuthService authService;
+
+    WishClient wishClient;
+
     ModelMapper modelMapper;
     JWTutil jwtUil;
 
@@ -83,6 +90,17 @@ public class MemberController {
         MemberDto memberDto = modelMapper.map(requestMember, MemberDto.class);
         ResponseMember updateMember = memberService.updateMember(memberDto);
         return ResponseEntity.status(HttpStatus.OK).body(updateMember);
+    }
+
+    @PostMapping("/member/wish")
+    public ResponseEntity<List<ResponseWishList>> memberWish(HttpServletRequest request){
+        String token = request.getHeader("Authorization").replace("Bearer ","");
+        String email = jwtUil.getEmail(token);
+        Long memberId = memberService.findIdByEmail(email);
+
+        List<ResponseWishList> responseWishLists = wishClient.memberWish(memberId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseWishLists);
     }
 
 }
