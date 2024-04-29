@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/wish-service")
+@RequestMapping("/wish")
 public class WishListController {
 
     WishListService wishListService;
@@ -47,11 +47,14 @@ public class WishListController {
         return null;
     }
 
-    @PostMapping("/wish/{memberId}")
+    @PostMapping("/list/{memberId}")
     public ResponseEntity<List<ResponseWishList>> memberWish(@PathVariable("memberId") Long memberId){
         List<WishList> memberWish = wishListService.memberWish(memberId);
+
         List<ResponseWishList> response = memberWish.stream()
-                .map(wish -> modelMapper.map(wish, ResponseWishList.class)).collect(Collectors.toList());
+                .map(wish -> modelMapper.map(wish, ResponseWishList.class))
+                .collect(Collectors.toList());
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

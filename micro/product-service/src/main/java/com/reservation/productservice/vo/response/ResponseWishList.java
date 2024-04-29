@@ -1,8 +1,13 @@
 package com.reservation.productservice.vo.response;
 
 import com.reservation.productservice.dto.ProductDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public class ResponseWishList extends ResponseVo{
+@Getter
+public class ResponseWishList{
+
     private Long id;
     private Long memberId;
     private ProductDto product;
