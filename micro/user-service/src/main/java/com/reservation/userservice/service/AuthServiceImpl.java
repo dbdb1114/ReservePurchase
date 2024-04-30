@@ -7,7 +7,7 @@ import com.reservation.userservice.dto.MemberDto;
 import com.reservation.userservice.entity.MemberRedis;
 import com.reservation.userservice.repository.MemberRedisRepository;
 import com.reservation.userservice.util.email.EmailProvider;
-import com.reservation.userservice.vo.request.EmailCertificationRequestVo;
+import com.reservation.userservice.vo.request.auth.EmailCertificationRequestVo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

@@ -44,7 +44,7 @@ public class WebConfig {
     }
 
     private AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager,memberService,env);
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager,env);
         return authenticationFilter;
     }
 

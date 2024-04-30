@@ -2,7 +2,7 @@ package com.reservation.productservice.service;
 
 import com.reservation.productservice.dto.Paging;
 import com.reservation.productservice.dto.ProductDto;
-import com.reservation.productservice.entity.ProductEntity;
+import com.reservation.productservice.entity.Product;
 import com.reservation.productservice.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +25,15 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Page<ProductDto> productList(int categoryId, Paging paging) {
         PageRequest pageRequest = paging.getPageRequest();
-        Page<ProductEntity> allByCategoryId = productRepository.findAllByCategoryId(categoryId, pageRequest);
+        Page<Product> allByCategoryId = productRepository.findAllByCategoryId(categoryId, pageRequest);
         Page<ProductDto> dtoPage = allByCategoryId.map(x -> modelMapper.map(x, ProductDto.class));
         return dtoPage;
     }
 
     @Override
     public ProductDto productDetail(Long id) {
-        ProductEntity productEntity = productRepository.findById(id).get();
-        ProductDto dto = modelMapper.map(productEntity, ProductDto.class);
+        Product product = productRepository.findById(id).get();
+        ProductDto dto = modelMapper.map(product, ProductDto.class);
         return dto;
     }
 

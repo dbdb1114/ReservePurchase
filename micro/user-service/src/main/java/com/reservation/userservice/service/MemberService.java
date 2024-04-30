@@ -2,6 +2,7 @@ package com.reservation.userservice.service;
 
 import com.reservation.userservice.dto.MemberDto;
 import com.reservation.userservice.vo.response.ResponseMember;
+import javax.print.DocFlavor.STRING;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface MemberService extends UserDetailsService {
@@ -11,7 +12,7 @@ public interface MemberService extends UserDetailsService {
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
     Long findIdByEmail(String email);
-
+    MemberDto findMemberByEmail(String email);
     MemberDto getUserDetailsByEmail(String email);
 
 }

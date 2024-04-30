@@ -61,9 +61,22 @@ public class MemberServiceImpl implements MemberService{
     }
 
     public Long findIdByEmail(String email){
-        Long idByEmail = memberRepository.findIdByEmail(email);
+        Long idByEmail = memberRepository.findIdByEmail(EncryptManager.infoEncode(email));
         return idByEmail;
     }
+
+    public MemberDto findMemberByEmail(String email){
+        Member member = memberRepository.findByEmail(EncryptManager.infoEncode(email));
+
+        if(member == null){
+            throw new UsernameNotFoundException(email);
+        }
+
+        MemberDto memberDto = modelMapper.map(member, MemberDto.class);
+        memberDto.decodeAll();
+        return memberDto;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -73,7 +86,6 @@ public class MemberServiceImpl implements MemberService{
         }
         return modelMapper.map(member,MemberDto.class).getUser();
     }
-
     @Override
     public MemberDto getUserDetailsByEmail(String email) {
         Member member = memberRepository.findByEmail(email);

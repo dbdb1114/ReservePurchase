@@ -10,7 +10,6 @@ import lombok.Data;
 public class ResponseMember extends ResponseVo {
     private String email;
     private String name;
-    private String password;
     private String phone;
     private Address address;
 }

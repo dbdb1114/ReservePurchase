@@ -1,5 +1,7 @@
 package com.reservation.userservice.vo.response.auth;
 
+import com.reservation.userservice.vo.response.ResponseVo;
+
 public enum EmailAuthStatus {
 
     SU("Success"),
@@ -10,7 +12,6 @@ public enum EmailAuthStatus {
         this.responseVo.setResponseMessage(message);
     }
 
-    public String certificateNumber;
     public ResponseVo responseVo = new ResponseVo();
 
 }

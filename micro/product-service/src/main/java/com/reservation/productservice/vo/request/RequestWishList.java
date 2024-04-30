@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class RequestWishList {
     Long id;
-    String email;
+    Long memberId;
     Long productId;
     Integer quantity;
 }

@@ -1,8 +1,8 @@
 package com.reservation.userservice.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.reservation.userservice.dto.MemberDto;
 import com.reservation.userservice.service.MemberService;
+import com.reservation.userservice.util.encrypt.EncryptManager;
 import com.reservation.userservice.vo.request.RequestLogin;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -30,13 +30,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 
-    private MemberService memberService;
     private Environment env;
     private final Key key;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager, MemberService memberService, Environment env) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, Environment env) {
         super.setAuthenticationManager(authenticationManager);
-        this.memberService = memberService;
         this.env = env;
         byte[] keyBytes = Decoders.BASE64.decode(env.getProperty("token.secret"));
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -69,16 +67,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
         String userName = ((User) authResult.getPrincipal()).getUsername();
-        MemberDto memberDetails = memberService.getUserDetailsByEmail(userName);
 
         String token = Jwts.builder()
-                .setSubject(memberDetails.getEmail())
+                .setSubject(EncryptManager.infoDecode(userName))
                 .setExpiration(new Date(System.currentTimeMillis() +
                         Long.parseLong(env.getProperty("token.expiration_time"))))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         response.addHeader("token", token);
-        response.addHeader("email", memberDetails.getEmail());
+        response.addHeader("email", EncryptManager.infoDecode(userName));
     }
 }

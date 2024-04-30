@@ -1,4 +1,4 @@
-package com.reservation.userservice.vo.response.auth;
+package com.reservation.productservice.vo.response;
 
 import lombok.Data;
 
