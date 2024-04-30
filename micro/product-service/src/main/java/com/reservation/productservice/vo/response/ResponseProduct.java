@@ -1,15 +1,8 @@
 package com.reservation.productservice.vo.response;
 
+import lombok.Getter;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-@Data
-@ToString
-@EqualsAndHashCode
-@NoArgsConstructor
+@Getter
 public class ResponseProduct {
 
     private Long id;

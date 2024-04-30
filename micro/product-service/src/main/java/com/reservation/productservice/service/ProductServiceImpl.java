@@ -4,6 +4,9 @@ import com.reservation.productservice.dto.Paging;
 import com.reservation.productservice.dto.ProductDto;
 import com.reservation.productservice.entity.Product;
 import com.reservation.productservice.repository.ProductRepository;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,5 +40,15 @@ public class ProductServiceImpl implements ProductService{
         return dto;
     }
 
+    @Override
+    public List<ProductDto> findProductInfoList(List<Long> productIdList) {
+        List<Product> productList = productRepository.findAllByIdIn(productIdList);
+        return productList.stream().map(ett->modelMapper.map(ett,ProductDto.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Boolean isEnoughStock(Long id) {
+        return productRepository.findStockById(id) > 0;
+    }
 
 }
