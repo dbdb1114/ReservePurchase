@@ -1,10 +1,16 @@
 package com.reservation.productservice.controller;
 
+import com.reservation.productservice.dto.ProductDto;
 import com.reservation.productservice.dto.WishListDto;
 import com.reservation.productservice.entity.WishList;
+import com.reservation.productservice.feign.MemberClient;
+import com.reservation.productservice.service.ProductService;
 import com.reservation.productservice.service.WishListService;
 import com.reservation.productservice.vo.request.RequestWishList;
+import com.reservation.productservice.vo.response.ResponseStatus;
+import com.reservation.productservice.vo.response.ResponseVo;
 import com.reservation.productservice.vo.response.ResponseWishList;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -25,27 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class WishListController {
 
     WishListService wishListService;
+    ProductService productService;
+    MemberClient memberClient;
     ModelMapper modelMapper;
-
-    @PutMapping("/add")
-    public ResponseEntity addWishList(@RequestBody RequestWishList requestWishList){
-
-        // memberID를 memberService 에서 가져와야함
-//        Long memberId = memberService.findIdByEmail(EncryptManager.infoEncode(requestWishList.getEmail()));
-//        WishListDto wishListDto = WishListDto.builder()
-//                .memberId(memberId)
-//                .product(ProductDto.builder().id(requestWishList.getProductId()).build())
-//                .quantity(requestWishList.getQuantity())
-//                .build();
-//        WishListDto savedDto = wishListService.addProduct(wishListDto);
-//
-//        if(savedDto != null){
-//            return ResponseEntity.status(HttpStatus.OK).body(savedDto);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fail");
-//        }
-        return null;
-    }
 
     @PostMapping("/list/{memberId}")
     public ResponseEntity<List<ResponseWishList>> memberWish(@PathVariable("memberId") Long memberId){
@@ -56,6 +44,45 @@ public class WishListController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    @PostMapping("/list")
+    public ResponseEntity<List<ResponseWishList>> memberWish(HttpServletRequest request){
+        Long memberId = memberClient.memberId(request.getHeader("Authorization"));
+        List<WishList> memberWish = wishListService.memberWish(memberId);
+
+        List<ResponseWishList> response = memberWish.stream()
+                .map(wish -> modelMapper.map(wish, ResponseWishList.class))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 상품 아이디만 보내도 되지 않을까
+     * */
+    @PutMapping("/add")
+    public ResponseEntity<ResponseVo> addWishList(@RequestBody RequestWishList requestWishList,
+                                    HttpServletRequest request){
+        Long productId = requestWishList.getProductId();
+        if(!productService.isEnoughStock(productId)){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ResponseStatus.NS.responseVo);
+        }
+
+        Long memberId = memberClient.memberId(request.getHeader("Authorization"));
+
+        WishListDto wishListDto = WishListDto.builder()
+                .memberId(memberId)
+                .product(ProductDto.builder().id(requestWishList.getProductId()).build())
+                .quantity(requestWishList.getQuantity())
+                .build();
+
+        WishListDto savedDto = wishListService.addWish(wishListDto);
+
+        if(savedDto != null){
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.SU.responseVo);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseStatus.FA.responseVo);
+        }
     }
 
     @DeleteMapping("/delete")

@@ -17,16 +17,16 @@ public class WishListServiceImpl implements WishListService{
     ModelMapper modelMapper;
 
     @Override
-    public WishListDto addProduct(WishListDto wishListDto) {
-        WishList entity = modelMapper.map(wishListDto, WishList.class);
-        WishList save = wishListRepository.save(entity);
-        return modelMapper.map(save, WishListDto.class);
-    }
-
-    @Override
     public List<WishList> memberWish(Long memberId) {
         List<WishList> memberWishList = wishListRepository.findAllByMemberId(memberId);
         return memberWishList;
+    }
+
+    @Override
+    public WishListDto addWish(WishListDto wishListDto) {
+        WishList entity = modelMapper.map(wishListDto, WishList.class);
+        WishList save = wishListRepository.save(entity);
+        return modelMapper.map(save, WishListDto.class);
     }
 
     @Override
@@ -39,8 +39,7 @@ public class WishListServiceImpl implements WishListService{
 
     @Override
     public Boolean delete(Long id) {
-        wishListRepository.delete(WishList.builder().id(id).build());
-        boolean result = !wishListRepository.existsById(id);
-        return result;
+//        wishListRepository.deleteWishListById(id);
+        return true;
     }
 }
