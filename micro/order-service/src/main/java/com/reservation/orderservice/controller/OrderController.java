@@ -19,7 +19,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +33,23 @@ public class OrderController {
     OrderService orderService;
     ModelMapper modelMapper;
 
+    @PostMapping("/order/list")
+    public ResponseEntity<ResponseVo> orderList(HttpServletRequest request){
+        String authorization = request.getHeader("Authorization");
+        Long memberId = memberClient.memberId(authorization);
+
+        List<Order> orders = orderService.orderList(memberId);
+        if(orders.size() > 0){
+            List<ResponseOrder> orderList = orders.stream()
+                    .map(order -> modelMapper.map(order, ResponseOrder.class))
+                    .collect(Collectors.toList());
+            ResponseVo<List<ResponseOrder>> responseVo = ResponseStatus.SU.responseVo;
+            responseVo.setData(orderList);
+            return ResponseEntity.status(HttpStatus.OK).body(responseVo);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseStatus.EC.responseVo);
+        }
+    }
 
     @PostMapping("/order/detail/{orderId}")
     public ResponseEntity<ResponseVo> orderDetail(@PathVariable Long orderId){
