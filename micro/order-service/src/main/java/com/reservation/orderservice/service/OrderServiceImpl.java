@@ -28,4 +28,9 @@ public class OrderServiceImpl implements OrderService{
 
         return savedOrder;
     }
+
+    @Override
+    public Order orderDetail(Long orderId) {
+        return orderRepository.findById(orderId).get();
+    }
 }
