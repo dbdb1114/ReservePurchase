@@ -1,5 +1,6 @@
 package com.reservation.productservice.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,12 +29,14 @@ public class Product {
 
     @Column(name = "category_id")
     private Integer categoryId;
-    @Column(nullable = false, unique = true)
+
+    @Column(nullable = false)
     private String name;
+
     @Column(nullable = false)
     private Integer price;
 
-    @OneToOne(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Stock stock;
 
     public void decreaseStock(int quantity){

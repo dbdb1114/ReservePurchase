@@ -9,8 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "STOCK")
 public class Stock {
@@ -19,11 +25,33 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PRODUCT_ID")
-    private Product product;
 
     @ColumnDefault("0")
     @Column(nullable = false)
     private Integer inventory;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRODUCT_ID", nullable = false)
+    private Product product;
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public void decreaseInventory(int quantity){
+        this.inventory -= quantity;
+    }
+
+    public void increaseInventory(int quantity){
+        this.inventory += quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "id=" + id +
+                ", inventory=" + inventory +
+                '}';
+    }
+
 }
