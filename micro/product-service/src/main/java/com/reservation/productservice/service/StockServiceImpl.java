@@ -1,11 +1,13 @@
 package com.reservation.productservice.service;
 
+import com.reservation.productservice.dto.StockDto;
 import com.reservation.productservice.entity.Stock;
 import com.reservation.productservice.repository.StockRepository;
 import com.reservation.productservice.vo.request.RequestOrderItem;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -13,6 +15,14 @@ import org.springframework.stereotype.Service;
 public class StockServiceImpl implements StockService{
 
     StockRepository stockRepository;
+    ModelMapper modelMapper;
+
+    @Override
+    public StockDto stockInfo(Long productId) {
+        Stock stock = stockRepository.findByProductId(productId);
+        StockDto stockDto = modelMapper.map(stock, StockDto.class);
+        return stockDto;
+    }
 
     @Override
     @Transactional
