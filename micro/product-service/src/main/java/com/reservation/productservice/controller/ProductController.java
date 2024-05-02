@@ -3,6 +3,7 @@ package com.reservation.productservice.controller;
 import com.reservation.productservice.dto.Paging;
 import com.reservation.productservice.dto.ProductDto;
 import com.reservation.productservice.service.ProductService;
+import com.reservation.productservice.vo.request.RequestOrderItem;
 import com.reservation.productservice.vo.response.ResponseProduct;
 import jakarta.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -64,6 +64,11 @@ public class ProductController {
 
         productInfoList.stream().forEach(dto->productDtoMap.put(dto.getId(), dto));
         return productDtoMap;
+    }
+
+    @PostMapping("/product/stock-decrease")
+    public void completeOrder(@RequestBody ArrayList<RequestOrderItem> orderItems){
+        productService.stockDecrease(orderItems);
     }
 
 }

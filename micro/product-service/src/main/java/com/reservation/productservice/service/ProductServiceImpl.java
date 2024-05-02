@@ -4,8 +4,8 @@ import com.reservation.productservice.dto.Paging;
 import com.reservation.productservice.dto.ProductDto;
 import com.reservation.productservice.entity.Product;
 import com.reservation.productservice.repository.ProductRepository;
+import com.reservation.productservice.vo.request.RequestOrderItem;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +28,8 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Page<ProductDto> productList(int categoryId, Paging paging) {
         PageRequest pageRequest = paging.getPageRequest();
-        Page<Product> allByCategoryId = productRepository.findAllByCategoryId(categoryId, pageRequest);
-        Page<ProductDto> dtoPage = allByCategoryId.map(x -> modelMapper.map(x, ProductDto.class));
+        Page<Product> products = productRepository.findAllByCategoryId(categoryId, pageRequest);
+        Page<ProductDto> dtoPage = products.map(entity -> modelMapper.map(entity, ProductDto.class));
         return dtoPage;
     }
 
@@ -51,4 +51,11 @@ public class ProductServiceImpl implements ProductService{
         return productRepository.findStockById(id) > 0;
     }
 
+    @Override
+    public void stockDecrease(List<RequestOrderItem> orderItemList) {
+        orderItemList.stream().forEach(item->{
+            Product product = productRepository.findById(item.getId()).get();
+            product.decreaseStock(item.getQuantity());
+        });
+    }
 }
