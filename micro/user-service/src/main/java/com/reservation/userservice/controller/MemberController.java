@@ -12,6 +12,7 @@ import com.reservation.userservice.vo.response.ResponseWishList;
 import com.reservation.userservice.vo.response.auth.EmailAuthStatus;
 import com.reservation.userservice.vo.response.auth.JoinStatus;
 import com.reservation.userservice.vo.response.ResponseVo;
+import com.reservation.userservice.vo.response.auth.ResponseStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -83,6 +84,19 @@ public class MemberController {
         MemberDto userInfo = memberService.findMemberByEmail(email);
         ResponseMember responseMember = modelMapper.map(userInfo, ResponseMember.class);
         return ResponseEntity.status(HttpStatus.OK).body(responseMember);
+    }
+
+    @PostMapping("/member-id")
+    public ResponseEntity<?> loginUserId(HttpServletRequest request){
+        String token = request.getHeader("Authorization").replace("Bearer ","");
+        String email = jwtUil.getEmail(token);
+        Long memberId = memberService.findIdByEmail(email);
+
+        if(memberId != null){
+            return ResponseEntity.status(HttpStatus.OK).body(memberId);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseStatus.FA.responseVo);
+        }
     }
 
     @PutMapping("/update")

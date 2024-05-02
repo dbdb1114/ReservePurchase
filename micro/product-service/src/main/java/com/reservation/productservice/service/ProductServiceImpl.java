@@ -2,8 +2,15 @@ package com.reservation.productservice.service;
 
 import com.reservation.productservice.dto.Paging;
 import com.reservation.productservice.dto.ProductDto;
+import com.reservation.productservice.dto.StockDto;
 import com.reservation.productservice.entity.Product;
+import com.reservation.productservice.entity.Stock;
 import com.reservation.productservice.repository.ProductRepository;
+import com.reservation.productservice.repository.StockRepository;
+import com.reservation.productservice.vo.request.RequestOrderItem;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,8 +32,8 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Page<ProductDto> productList(int categoryId, Paging paging) {
         PageRequest pageRequest = paging.getPageRequest();
-        Page<Product> allByCategoryId = productRepository.findAllByCategoryId(categoryId, pageRequest);
-        Page<ProductDto> dtoPage = allByCategoryId.map(x -> modelMapper.map(x, ProductDto.class));
+        Page<Product> products = productRepository.findAllByCategoryId(categoryId, pageRequest);
+        Page<ProductDto> dtoPage = products.map(entity -> modelMapper.map(entity, ProductDto.class));
         return dtoPage;
     }
 
@@ -37,5 +44,10 @@ public class ProductServiceImpl implements ProductService{
         return dto;
     }
 
+    @Override
+    public List<ProductDto> findProductInfoList(List<Long> productIdList) {
+        List<Product> productList = productRepository.findAllByIdIn(productIdList);
+        return productList.stream().map(ett->modelMapper.map(ett,ProductDto.class)).collect(Collectors.toList());
+    }
 
 }
