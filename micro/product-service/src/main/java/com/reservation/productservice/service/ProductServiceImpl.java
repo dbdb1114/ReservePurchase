@@ -2,11 +2,15 @@ package com.reservation.productservice.service;
 
 import com.reservation.productservice.dto.Paging;
 import com.reservation.productservice.dto.ProductDto;
+import com.reservation.productservice.dto.StockDto;
 import com.reservation.productservice.entity.Product;
+import com.reservation.productservice.entity.Stock;
 import com.reservation.productservice.repository.ProductRepository;
+import com.reservation.productservice.repository.StockRepository;
 import com.reservation.productservice.vo.request.RequestOrderItem;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,16 +50,4 @@ public class ProductServiceImpl implements ProductService{
         return productList.stream().map(ett->modelMapper.map(ett,ProductDto.class)).collect(Collectors.toList());
     }
 
-    @Override
-    public Boolean isEnoughStock(Long id) {
-        return productRepository.findStockById(id) > 0;
-    }
-
-    @Override
-    public void stockDecrease(List<RequestOrderItem> orderItemList) {
-        orderItemList.stream().forEach(item->{
-            Product product = productRepository.findById(item.getId()).get();
-            product.decreaseStock(item.getQuantity());
-        });
-    }
 }

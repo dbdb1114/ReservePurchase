@@ -3,7 +3,6 @@ package com.reservation.productservice.controller;
 import com.reservation.productservice.dto.Paging;
 import com.reservation.productservice.dto.ProductDto;
 import com.reservation.productservice.service.ProductService;
-import com.reservation.productservice.vo.request.RequestOrderItem;
 import com.reservation.productservice.vo.response.ResponseProduct;
 import jakarta.annotation.Nullable;
 import java.util.ArrayList;
@@ -66,9 +65,5 @@ public class ProductController {
         return productDtoMap;
     }
 
-    @PostMapping("/product/stock-decrease")
-    public void completeOrder(@RequestBody ArrayList<RequestOrderItem> orderItems){
-        productService.stockDecrease(orderItems);
-    }
 
 }
