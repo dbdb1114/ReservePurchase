@@ -53,5 +53,4 @@ public class Stock {
                 ", inventory=" + inventory +
                 '}';
     }
-
 }
