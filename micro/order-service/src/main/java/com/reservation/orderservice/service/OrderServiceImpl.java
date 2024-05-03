@@ -3,15 +3,11 @@ package com.reservation.orderservice.service;
 import com.reservation.orderservice.dto.OrderDto;
 import com.reservation.orderservice.dto.OrderItemDto;
 import com.reservation.orderservice.entity.Order;
-import com.reservation.orderservice.entity.OrderItem;
 import com.reservation.orderservice.repository.OrderRepository;
-import com.reservation.orderservice.vo.request.RequestOrderItem;
+import com.reservation.orderservice.vo.request.RequestOrder;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import org.antlr.v4.runtime.atn.SemanticContext.OR;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +63,18 @@ public class OrderServiceImpl implements OrderService{
         List<Order> orders = orderRepository.findAllByOrderDateBetween(stDate, edDate);
 
         orders.stream().forEach(order->{
-            order.orderUpdate();
+            order.statusUpdate();
         });
+    }
+
+    @Override
+    @Transactional
+    public Order makeWithDrawl(RequestOrder requestOrder) {
+        // 취소 가능한 주문인지 확인
+        Order order = orderRepository.findById(requestOrder.getId()).get();
+        if(order.isWithDrawlAble()){
+            order.makeWithDrawl();
+        }
+        return order;
     }
 }
