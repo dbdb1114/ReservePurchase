@@ -1,6 +1,7 @@
 package com.reservation.orderservice.repository;
 
 import com.reservation.orderservice.entity.Order;
+import com.reservation.orderservice.entity.OrderStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,5 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Long getLastInsertId();
 
     List<Order> findAllByMemberId(Long memberId);
-    List<Order> findAllByOrderDateBetween(LocalDateTime stDate, LocalDateTime edDate);
+    List<Order> findAllByOrderDateBetweenAndStatusIsIn(LocalDateTime stDate, LocalDateTime edDate, OrderStatus[] list);
+    List<Order> findAllByOrderDateBetweenAndStatus(LocalDateTime stDate, LocalDateTime edDate, OrderStatus status);
 }
