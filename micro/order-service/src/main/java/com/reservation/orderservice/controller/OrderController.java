@@ -115,4 +115,18 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.FA.getResponseVo());
     }
 
+    @PostMapping("/refund")
+    public ResponseEntity<ResponseVo> refundOrder(@RequestBody RequestOrder requestOrder) {
+        Order order = orderService.applyRefund(requestOrder);
+        ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
+
+        if(responseOrder.getStatus() == OrderStatus.APPLYREFUND){
+            ResponseVo<ResponseOrder> responseVo = ResponseStatus.SU.getResponseVo();
+            responseVo.setData(responseOrder);
+            return ResponseEntity.status(HttpStatus.OK).body(responseVo);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.FA.getResponseVo());
+    }
+
 }

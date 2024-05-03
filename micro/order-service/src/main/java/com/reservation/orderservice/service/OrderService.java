@@ -11,5 +11,7 @@ public interface OrderService {
     Order orderDetail(Long orderId);
     List<Order> orderList(Long memberId);
     void orderStatusUpdate();
+    void updateRefundStatus();
     Order makeWithDrawl(RequestOrder requestOrder);
+    Order applyRefund(RequestOrder requestOrder);
 }

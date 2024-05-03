@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -70,11 +71,28 @@ public class Order {
         }
 
     }
+
+    public void completeRefund(){
+        if(this.status == OrderStatus.APPLYREFUND && !Objects.equals(this.orderDate.toLocalDate(), LocalDate.now())){
+            this.status = OrderStatus.REFUNDCOMPLETE;
+        }
+    }
+
     public boolean isWithDrawlAble(){
         return this.status == OrderStatus.PREPARE || this.status == OrderStatus.BEFOREPAY;
     }
     public Order makeWithDrawl() {
         this.status = OrderStatus.WITHDRAWAL;
+        return this;
+    }
+
+    public boolean isRefundAble() {
+        // D+2 부터는 구매확정으로 이어지기 때문에 배송완료 상태라면 모두 환불 가능하다.
+        return this.status == OrderStatus.DELIVERED;
+    }
+
+    public Order makeRefund(){
+        this.status = OrderStatus.APPLYREFUND;
         return this;
     }
 }
