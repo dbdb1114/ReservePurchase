@@ -30,21 +30,6 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public Order cancelOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId).get();
-        OrderDto orderDto = modelMapper.map(order, OrderDto.class);
-
-        if(!orderDto.isCancelAble()){
-            return null;
-        }
-
-        order.cancelOrder();
-        //재고변경
-
-        return order;
-    }
-
-    @Override
     public Order orderDetail(Long orderId) {
         return orderRepository.findById(orderId).get();
     }
