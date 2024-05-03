@@ -1,6 +1,5 @@
 package com.reservation.orderservice.entity;
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +11,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -51,5 +52,29 @@ public class Order {
 
     public void addOrderItem(OrderItem orderItem) {
         this.items.add(orderItem);
+    }
+    public void cancelOrder(){
+        this.status = OrderStatus.WITHDRAWAL;
+    }
+
+    public void statusUpdate(){
+        Period period = Period.between(this.orderDate.toLocalDate(), LocalDate.now());
+
+        switch (period.getDays()) {
+            case 1 : this.status = OrderStatus.SHIPPING;
+                break;
+            case 2, 3 : this.status = OrderStatus.DELIVERED;
+                break;
+            case 4 :  this.status = OrderStatus.CONFIRMPURCHASE;
+                break;
+        }
+
+    }
+    public boolean isWithDrawlAble(){
+        return this.status == OrderStatus.PREPARE || this.status == OrderStatus.BEFOREPAY;
+    }
+    public Order makeWithDrawl() {
+        this.status = OrderStatus.WITHDRAWAL;
+        return this;
     }
 }
