@@ -1,15 +1,17 @@
 package com.reservation.orderservice.service;
 
+import static com.reservation.orderservice.entity.OrderStatus.notIssueUpdate;
+
 import com.reservation.orderservice.dto.OrderDto;
 import com.reservation.orderservice.dto.OrderItemDto;
 import com.reservation.orderservice.entity.Order;
-import com.reservation.orderservice.entity.OrderItem;
+import com.reservation.orderservice.entity.OrderStatus;
 import com.reservation.orderservice.repository.OrderRepository;
-import com.reservation.orderservice.vo.request.RequestOrderItem;
+import com.reservation.orderservice.vo.request.RequestOrder;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import org.antlr.v4.runtime.atn.SemanticContext.OR;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderServiceImpl implements OrderService{
 
     OrderRepository orderRepository;
+    ModelMapper modelMapper;
 
     @Override
     @Transactional
@@ -37,5 +40,47 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<Order> orderList(Long memberId) {
         return orderRepository.findAllByMemberId(memberId);
+    }
+
+    @Override
+    @Transactional
+    public void orderStatusUpdate() {
+        LocalDateTime edDate = LocalDateTime.now();
+        LocalDateTime stDate = edDate.minusDays(5);
+
+        List<Order> orders = orderRepository.findAllByOrderDateBetweenAndStatusIsIn(stDate, edDate,notIssueUpdate);
+        orders.forEach(Order::statusUpdate);
+    }
+
+    @Override
+    @Transactional
+    public Order makeWithDrawl(RequestOrder requestOrder) {
+        // 취소 가능한 주문인지 확인
+        Order order = orderRepository.findById(requestOrder.getId()).get();
+        if(order.isWithDrawlAble()){
+            order.makeWithDrawl();
+        }
+        return order;
+    }
+
+    @Override
+    @Transactional
+    public Order applyRefund(RequestOrder requestOrder) {
+        // 취소 가능한 주문인지 확인
+        Order order = orderRepository.findById(requestOrder.getId()).get();
+        if(order.isRefundAble()){
+            order.makeRefund();
+        }
+        return order;
+    }
+
+    @Override
+    @Transactional
+    public void updateRefundStatus() {
+        LocalDateTime edDate = LocalDateTime.now();
+        LocalDateTime stDate = edDate.minusDays(6); // 어차피 구매확정까지 길어야 4~5일 이므로 넉넉히 6일
+
+        List<Order> orders = orderRepository.findAllByOrderDateBetweenAndStatus(stDate, edDate, OrderStatus.APPLYREFUND);
+        orders.forEach(Order::completeRefund);
     }
 }
