@@ -12,6 +12,7 @@ public interface OrderService {
     List<Order> orderList(Long memberId);
     void orderStatusUpdate();
     void updateRefundStatus();
+    void deleteOrder(RequestOrder order);
     Order makeWithDrawl(RequestOrder requestOrder);
     Order applyRefund(RequestOrder requestOrder);
 }

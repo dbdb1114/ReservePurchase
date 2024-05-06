@@ -63,6 +63,13 @@ public class OrderServiceImpl implements OrderService{
         return order;
     }
 
+
+    @Override
+    public void deleteOrder(RequestOrder requestOrder){
+        Order order = modelMapper.map(requestOrder, Order.class);
+        orderRepository.delete(order);
+    }
+
     @Override
     @Transactional
     public Order applyRefund(RequestOrder requestOrder) {
