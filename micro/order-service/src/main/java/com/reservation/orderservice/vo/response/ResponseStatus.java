@@ -10,15 +10,10 @@ public enum ResponseStatus {
     EC("EmptyContents");
 
     ResponseStatus(String message){
-        this.responseVo.setResponseCode(this.name());
-        this.responseVo.setResponseMessage(message);
+        this.responseCode = this.name();
+        this.responseMessage = message;
     }
 
-    private ResponseVo responseVo = new ResponseVo();
-
-    public ResponseVo getResponseVo(){
-        this.responseVo.setData("{}");
-        return this.responseVo;
-    }
-
+    final String responseCode;
+    final String responseMessage;
 }
