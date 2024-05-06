@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -99,7 +100,7 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/cancel")
+    @PatchMapping("/cancel")
     public ResponseEntity<ResponseVo> cancelOrder(@RequestBody RequestOrder requestOrder) {
         Order order = orderService.makeWithDrawl(requestOrder);
         ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
@@ -115,12 +116,13 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.FA.getResponseVo());
     }
 
-    @PostMapping("/refund")
+    @PatchMapping("/refund")
     public ResponseEntity<ResponseVo> refundOrder(@RequestBody RequestOrder requestOrder) {
         Order order = orderService.applyRefund(requestOrder);
         ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
 
         if(responseOrder.getStatus() == OrderStatus.APPLYREFUND){
+            // 재고 처리
             ResponseVo<ResponseOrder> responseVo = ResponseStatus.SU.getResponseVo();
             responseVo.setData(responseOrder);
             return ResponseEntity.status(HttpStatus.OK).body(responseVo);
