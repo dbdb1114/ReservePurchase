@@ -2,6 +2,7 @@ package com.reservation.orderservice.entity;
 
 public enum OrderStatus {
     BEFOREPAY ,
+    PAYPROCESS,
     PREPARE,
     SHIPPING,
     DELIVERED,
