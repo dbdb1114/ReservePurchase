@@ -2,21 +2,15 @@ package com.reservation.orderservice.service;
 
 import com.reservation.orderservice.dto.OrderDto;
 import com.reservation.orderservice.dto.OrderItemDto;
-import com.reservation.orderservice.dto.ProductDto;
 import com.reservation.orderservice.entity.Order;
 import com.reservation.orderservice.entity.OrderStatus;
 import com.reservation.orderservice.repository.OrderRepository;
 import com.reservation.orderservice.vo.request.RequestOrder;
-import com.reservation.orderservice.vo.request.RequestOrderItem;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.aspectj.lang.annotation.Before;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -24,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
+@Transactional
 class OrderServiceImplTest {
 
     @Autowired
@@ -74,16 +69,17 @@ class OrderServiceImplTest {
         LocalDateTime edDate = LocalDateTime.now();
         LocalDateTime stDate = edDate.minusDays(3);
 
-        List<Order> allByOrderDateBetween = orderRepository.findAllByOrderDateBetween(stDate, edDate);
+        OrderStatus[] orderStatuses = {OrderStatus.PREPARE, OrderStatus.SHIPPING, OrderStatus.DELIVERED};
+        List<Order> between = orderRepository.findAllByOrderDateBetweenAndStatusIsIn(LocalDateTime.now().minusDays(5),LocalDateTime.now(),orderStatuses);
 
-        for (Order order : allByOrderDateBetween) {
+        for (Order order : between) {
             order.statusUpdate();
             System.out.println("order = " + order);
         }
     }
 
 
-    @BeforeEach
+//    @BeforeEach
     void 취소주문생성(){
         System.out.println("취소주문생성");
         System.out.println("취소주문생성");
@@ -146,7 +142,8 @@ class OrderServiceImplTest {
     @DisplayName("주문 취소하기 !")
     void 주문_취소하기() {
         //given
-        List<Order> between = orderRepository.findAllByOrderDateBetween(LocalDateTime.now().minusDays(1),LocalDateTime.now());
+        OrderStatus[] orderStatuses = {OrderStatus.PREPARE, OrderStatus.SHIPPING, OrderStatus.DELIVERED};
+        List<Order> between = orderRepository.findAllByOrderDateBetweenAndStatusIsIn(LocalDateTime.now().minusDays(1),LocalDateTime.now(),orderStatuses);
 
         Order order1 = between.get(0);
         Order order2 = between.get(1);

@@ -1,10 +1,10 @@
-package com.reservation_purchase.discovery;
+package com.resurvepurchase.authservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DiscoveryApplicationTests {
+class AuthServiceApplicationTests {
 
     @Test
     void contextLoads() {

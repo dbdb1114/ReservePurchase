@@ -6,5 +6,5 @@ import lombok.Data;
 public class ProductDto {
     private Long productId;
     private Integer price;
-    private Integer stock;
+    private StockDto stock;
 }

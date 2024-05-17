@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,11 +50,11 @@ public class OrderController {
             List<ResponseOrder> orderList = orders.stream()
                     .map(order -> modelMapper.map(order, ResponseOrder.class))
                     .collect(Collectors.toList());
-            ResponseVo<List<ResponseOrder>> responseVo = ResponseStatus.SU.getResponseVo();
+            ResponseVo<List<ResponseOrder>> responseVo = new ResponseVo<>(ResponseStatus.SU);
             responseVo.setData(orderList);
             return ResponseEntity.status(HttpStatus.OK).body(responseVo);
         } else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseStatus.EC.getResponseVo());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseVo<>(ResponseStatus.EC));
         }
     }
 
@@ -62,12 +63,10 @@ public class OrderController {
 
         Order order = orderService.orderDetail(orderId);
         if(order != null){
-            ResponseVo<ResponseOrder> responseVo = ResponseStatus.SU.getResponseVo();
             ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
-            responseVo.setData(responseOrder);
-            return ResponseEntity.status(HttpStatus.OK).body(responseVo);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<ResponseOrder>(ResponseStatus.SU).setData(responseOrder));
         } else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseStatus.FA.getResponseVo());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseVo<>(ResponseStatus.FA));
         }
     }
 
@@ -80,7 +79,7 @@ public class OrderController {
                 .memberId(memberId)
                 .build();
 
-        List<Long> idList = orderItemList.stream().map(item -> item.getProductId()).collect(Collectors.toList());
+        List<Long> idList = orderItemList.stream().map(OrderItemDto::getProductId).collect(Collectors.toList());
         Map<Long,ProductDto> productInfo = productClient.productInfo(idList);
 
         orderItemList.stream().forEach(dto -> {
@@ -93,40 +92,37 @@ public class OrderController {
         if(order != null){
             ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
             stockClient.decreaseStock(responseOrder.getItems());
-            return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.SU.getResponseVo());
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<ResponseOrder>(ResponseStatus.SU));
         } else {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(ResponseStatus.FA.getResponseVo());
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseVo<>(ResponseStatus.FA));
         }
     }
 
-    @PostMapping("/cancel")
+    @PatchMapping("/cancel")
     public ResponseEntity<ResponseVo> cancelOrder(@RequestBody RequestOrder requestOrder) {
         Order order = orderService.makeWithDrawl(requestOrder);
         ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
 
         if(responseOrder.getStatus() == OrderStatus.WITHDRAWAL){
-            // 재고 처리
             stockClient.increaseStock(responseOrder.getItems());
-            ResponseVo<ResponseOrder> responseVo = ResponseStatus.SU.getResponseVo();
-            responseVo.setData(responseOrder);
-            return ResponseEntity.status(HttpStatus.OK).body(responseVo);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<ResponseOrder>(ResponseStatus.SU).setData(responseOrder));
+        }else{
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.FA));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.FA.getResponseVo());
     }
 
-    @PostMapping("/refund")
-    public ResponseEntity<ResponseVo> refundOrder(@RequestBody RequestOrder requestOrder) {
+    @PatchMapping("/refund")
+    public ResponseEntity refundOrder(@RequestBody RequestOrder requestOrder) {
         Order order = orderService.applyRefund(requestOrder);
         ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
 
-        if(responseOrder.getStatus() == OrderStatus.APPLYREFUND){
-            ResponseVo<ResponseOrder> responseVo = ResponseStatus.SU.getResponseVo();
-            responseVo.setData(responseOrder);
-            return ResponseEntity.status(HttpStatus.OK).body(responseVo);
+        if(responseOrder.getStatus() == OrderStatus.APPLYREFUND) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseVo<ResponseOrder>(ResponseStatus.SU).setData(responseOrder));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.FA));
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.FA.getResponseVo());
     }
 
 }

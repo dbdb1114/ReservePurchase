@@ -43,7 +43,7 @@ public class Order {
     private final List<OrderItem> items = new ArrayList<>();
 
     @Column(nullable = false)
-    @ColumnDefault("'PREPARE'")
+    @ColumnDefault("'BEFOREPAY'")
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -56,6 +56,15 @@ public class Order {
     }
     public void cancelOrder(){
         this.status = OrderStatus.WITHDRAWAL;
+    }
+
+    public Order inPayProcess() {
+        this.status = OrderStatus.PAYPROCESS;
+        return this;
+    }
+    public Order payComplete(){
+        this.status = OrderStatus.PREPARE;
+        return this;
     }
 
     public void statusUpdate(){
