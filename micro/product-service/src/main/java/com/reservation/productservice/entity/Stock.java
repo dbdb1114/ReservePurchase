@@ -1,5 +1,6 @@
 package com.reservation.productservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.NoSuchElementException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,7 @@ public class Stock {
     @Column(nullable = false)
     private Integer inventory;
 
+    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRODUCT_ID", nullable = false)
     private Product product;
@@ -39,6 +42,9 @@ public class Stock {
     }
 
     public void decreaseInventory(int quantity){
+        if(this.inventory <= 0){
+            throw new NoSuchElementException();
+        }
         this.inventory -= quantity;
     }
 
