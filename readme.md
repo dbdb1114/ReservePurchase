@@ -14,7 +14,7 @@
 ---
 **GitHub 칸반보드를 활용한 일정관리**
 
-<img src="https://github.com/dbdb1114/ReservePurchase/assets/105846655/009cea62-80c1-4d2d-8ac4-424634e70e33)" style="height:400px;" />
+<img src="https://github.com/dbdb1114/ReservePurchase/assets/105846655/ff0d5a58-9a6b-4ac9-a209-3baa142fa845)"/>
 
 **개발기간 : 24.04.17 ~ 24.05.15**
 
