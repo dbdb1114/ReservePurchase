@@ -12,7 +12,9 @@
 ### 📅 프로젝트 진척 및 일정 관리
 
 ---
-[**GitHub 칸반보드**](https://github.com/users/dbdb1114/projects/1/views/1)
+**GitHub 칸반보드를 활용한 일정관리**
+
+<img src="https://github.com/dbdb1114/ReservePurchase/assets/105846655/009cea62-80c1-4d2d-8ac4-424634e70e33)" style="height:400px;" />
 
 **개발기간 : 24.04.17 ~ 24.05.15**
 
