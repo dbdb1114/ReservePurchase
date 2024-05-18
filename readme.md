@@ -59,11 +59,11 @@
 
 ## 부하 테스트 및 TroubleShooting
 
-- 재고관리 API의 Reids 동시성 문제 해결
+- 재고관리 API의 Reids 동시성 문제 해결 [정리문서](https://azure-attention-c2e.notion.site/52dd430bc9494bd7b05725b585efa503?pvs=4)
     - **문제** : 약 100건 이상의 동시 요청시 존재하는 데이터에 대해 NPE가 발생
     - **원인** : JUnit Test로 병렬처리 시도의 경우에만 문제 발생하여 동시성 문제로 파악
     - **해결** : Redisson 분산락 방식을 도입하여 해결
-- 상품목록 및 상세정보 조회 성능 개선 `TPS : 155.7 → 423`
+- 상품목록 및 상세정보 조회 성능 개선 `TPS : 155.7 → 423` [정리문서](https://azure-attention-c2e.notion.site/PRODUCT-LIST-0b20f869c7d9409cad199df4afc1c5b1?pvs=4)
     - **문제** : 많은 동시 요청시 요청 처리 속도가 최대 6초까지 걸리는 현상
     - **원인** : BlockingIO + DB 연산의 부하가 큰 것으로 추측
     - **해결** : Redis의 Cach를 활용하여, 평균 700ms 수준으로 성능 향상
