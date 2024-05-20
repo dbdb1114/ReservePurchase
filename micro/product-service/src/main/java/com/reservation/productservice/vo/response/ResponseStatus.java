@@ -9,8 +9,7 @@ public enum ResponseStatus {
     String message;
 
     ResponseStatus(String message){
-        this.responseVo.setResponseCode(this.name());
-        this.responseVo.setResponseMessage(message);
+        this.message = message;
     }
 
 }

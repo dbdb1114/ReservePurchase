@@ -9,6 +9,11 @@ public class ResponseVo<T> {
         this.responseMessage = responseStatus.message;
         this.responseCode = responseStatus.name();
     }
+    public ResponseVo(ResponseStatus responseStatus, T data) {
+        this.responseMessage = responseStatus.message;
+        this.responseCode = responseStatus.name();
+        this.data = data;
+    }
 
     String responseCode;
     String responseMessage;
