@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 
 public interface ProductService {
 
-     Page<ProductDto> productList(int categoryId, Paging paging);
+     List<ProductDto> productList(int categoryId, Paging paging);
      ProductDto productDetail(Long id);
      List<ProductDto> findProductInfoList(List<Long> productIdList);
 }

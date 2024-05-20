@@ -4,6 +4,8 @@ import com.reservation.productservice.dto.Paging;
 import com.reservation.productservice.dto.ProductDto;
 import com.reservation.productservice.service.ProductService;
 import com.reservation.productservice.vo.response.ResponseProduct;
+import com.reservation.productservice.vo.response.status.ResponseStatus;
+import com.reservation.productservice.vo.response.status.ResponseVo;
 import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,27 +37,31 @@ public class ProductController {
     }
 
     @GetMapping("/{categoryId}/list")
-    public ResponseEntity productList(@PathVariable Integer categoryId, @RequestBody @Nullable Paging paging) {
-        Page<ProductDto> productDtos = productService.productList(categoryId, paging);
+    public ResponseEntity<ResponseVo> productList(@PathVariable Integer categoryId, @RequestBody @Nullable Paging paging) {
+        List<ProductDto> productDtos = productService.productList(categoryId, paging);
 
-        if(productDtos.getContent().size() > 0){
-            return ResponseEntity.status(HttpStatus.OK).body(productDtos);
+        if(!productDtos.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU));
         } else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("{}");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseVo<>(ResponseStatus.FA));
         }
     }
 
     @GetMapping("/detail/{productId}")
-    public ResponseEntity<ResponseProduct> productDetail(@PathVariable("productId") Long productId){
+    public ResponseEntity<ResponseVo> productDetail(@PathVariable("productId") Long productId){
         ProductDto productDto = productService.productDetail(productId);
+
         if(productDto != null){
             ResponseProduct responseProduct = modelMapper.map(productDto, ResponseProduct.class);
-            return ResponseEntity.status(HttpStatus.OK).body(responseProduct);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseVo<>(ResponseStatus.FA));
         }
     }
 
+    /**
+     *  주문서 생성 용도 정보 리스트
+     */
     @PostMapping("/product/list-info")
     public Map<Long, ProductDto> productInfo(@RequestBody ArrayList<Long> productIdList){
         List<ProductDto> productInfoList = productService.findProductInfoList(productIdList);
@@ -64,6 +70,5 @@ public class ProductController {
         productInfoList.stream().forEach(dto->productDtoMap.put(dto.getId(), dto));
         return productDtoMap;
     }
-
 
 }
