@@ -1,4 +1,4 @@
-package com.reservation.productservice.vo.response;
+package com.reservation.productservice.vo.response.status;
 
 import lombok.Data;
 
