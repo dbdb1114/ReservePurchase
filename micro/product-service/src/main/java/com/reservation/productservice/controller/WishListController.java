@@ -7,8 +7,8 @@ import com.reservation.productservice.feign.MemberClient;
 import com.reservation.productservice.service.ProductService;
 import com.reservation.productservice.service.WishListService;
 import com.reservation.productservice.vo.request.RequestWishList;
-import com.reservation.productservice.vo.response.ResponseStatus;
-import com.reservation.productservice.vo.response.ResponseVo;
+import com.reservation.productservice.vo.response.status.ResponseStatus;
+import com.reservation.productservice.vo.response.status.ResponseVo;
 import com.reservation.productservice.vo.response.ResponseWishList;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -57,9 +57,6 @@ public class WishListController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU,wishLists));
     }
 
-    /**
-     * 상품 아이디만 보내도 되지 않을까
-     * */
     @PutMapping("/add")
     public ResponseEntity<ResponseVo> addWishList(@RequestBody RequestWishList requestWishList,
                                     HttpServletRequest request){
