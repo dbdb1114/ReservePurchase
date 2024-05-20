@@ -28,13 +28,13 @@ public class StockController {
     public ResponseEntity stockInfo(@PathVariable Long productId){
         StockDto stockDto = stockService.stockInfo(productId);
         if(stockDto!=null){
-            ResponseVo<StockDto> responseVo = ResponseStatus.SU.responseVo;
+            ResponseVo<StockDto> responseVo = new ResponseVo<>(ResponseStatus.SU);
             responseVo.setData(stockDto);
             return ResponseEntity.status(HttpStatus.OK).body(responseVo);
         } else if (stockDto.getInventory() <= 0){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseStatus.NS.responseVo);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseVo<>(ResponseStatus.NS));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseStatus.FA.responseVo);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseVo<>(ResponseStatus.FA));
         }
     }
 
@@ -43,9 +43,9 @@ public class StockController {
         Integer resCount = stockService.decreaseStock(orderItemList);
 
         if(resCount == orderItemList.size()){
-            return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.SU.responseVo);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(ResponseStatus.FA.responseVo);
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(new ResponseVo<>(ResponseStatus.FA));
         }
     }
 
@@ -54,9 +54,9 @@ public class StockController {
         Integer resCount = stockService.increaseStock(orderItemList);
 
         if(resCount == orderItemList.size()){
-            return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.SU.responseVo);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(ResponseStatus.FA.responseVo);
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(new ResponseVo<>(ResponseStatus.FA));
         }
 
     }

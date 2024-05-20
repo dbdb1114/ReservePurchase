@@ -46,15 +46,15 @@ public class WishListController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     @PostMapping("/list")
-    public ResponseEntity<List<ResponseWishList>> memberWish(HttpServletRequest request){
+    public ResponseEntity<ResponseVo> memberWish(HttpServletRequest request){
         Long memberId = memberClient.memberId(request.getHeader("Authorization"));
         List<WishList> memberWish = wishListService.memberWish(memberId);
 
-        List<ResponseWishList> response = memberWish.stream()
+        List<ResponseWishList> wishLists = memberWish.stream()
                 .map(wish -> modelMapper.map(wish, ResponseWishList.class))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU,wishLists));
     }
 
     /**
@@ -63,10 +63,6 @@ public class WishListController {
     @PutMapping("/add")
     public ResponseEntity<ResponseVo> addWishList(@RequestBody RequestWishList requestWishList,
                                     HttpServletRequest request){
-        Long productId = requestWishList.getProductId();
-        if(!productService.isEnoughStock(productId)){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ResponseStatus.NS.responseVo);
-        }
 
         Long memberId = memberClient.memberId(request.getHeader("Authorization"));
 
@@ -79,9 +75,9 @@ public class WishListController {
         WishListDto savedDto = wishListService.addWish(wishListDto);
 
         if(savedDto != null){
-            return ResponseEntity.status(HttpStatus.OK).body(ResponseStatus.SU.responseVo);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo(ResponseStatus.SU));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseStatus.FA.responseVo);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseVo(ResponseStatus.FA));
         }
     }
 
@@ -89,9 +85,9 @@ public class WishListController {
     public ResponseEntity deleteWishList(@RequestBody RequestWishList requestWishList){
         Boolean result = wishListService.delete(requestWishList.getId());
         if(result){
-            return ResponseEntity.status(HttpStatus.OK).body("SU");
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("FA");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseVo<>(ResponseStatus.FA));
         }
     }
 
@@ -99,6 +95,6 @@ public class WishListController {
     public ResponseEntity changeQuantity(@RequestBody RequestWishList requestWishList){
         WishListDto dto = modelMapper.map(requestWishList, WishListDto.class);
         wishListService.changeQuantity(dto);
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU, dto));
     }
 }
