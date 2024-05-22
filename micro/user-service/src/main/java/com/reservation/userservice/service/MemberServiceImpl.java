@@ -86,6 +86,7 @@ public class MemberServiceImpl implements MemberService{
         }
         return modelMapper.map(member,MemberDto.class).getUser();
     }
+
     @Override
     public MemberDto getUserDetailsByEmail(String email) {
         Member member = memberRepository.findByEmail(email);

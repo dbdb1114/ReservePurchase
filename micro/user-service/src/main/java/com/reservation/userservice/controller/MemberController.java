@@ -1,24 +1,20 @@
 package com.reservation.userservice.controller;
 
 import com.reservation.userservice.dto.MemberDto;
-import com.reservation.userservice.feign.WishClient;
 import com.reservation.userservice.service.AuthService;
 import com.reservation.userservice.service.MemberService;
 import com.reservation.userservice.temp.JWTutil;
 import com.reservation.userservice.vo.request.auth.EmailCertificationRequestVo;
 import com.reservation.userservice.vo.request.RequestMember;
 import com.reservation.userservice.vo.response.ResponseMember;
-import com.reservation.userservice.vo.response.ResponseWishList;
-import com.reservation.userservice.vo.response.auth.EmailAuthStatus;
-import com.reservation.userservice.vo.response.auth.JoinStatus;
-import com.reservation.userservice.vo.response.ResponseVo;
-import com.reservation.userservice.vo.response.auth.ResponseStatus;
+import com.reservation.userservice.vo.response.status.EmailAuthStatus;
+import com.reservation.userservice.vo.response.status.JoinStatus;
+import com.reservation.userservice.vo.response.status.ResponseVo;
+import com.reservation.userservice.vo.response.status.ResponseStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +32,6 @@ public class MemberController {
     MemberService memberService;
     AuthService authService;
 
-    WishClient wishClient;
-
     ModelMapper modelMapper;
     JWTutil jwtUil;
 
@@ -50,9 +44,9 @@ public class MemberController {
     public ResponseEntity<ResponseVo> join(@RequestBody @Valid RequestMember member) {
 
         if (memberService.existsByEmail(member.getEmail())){
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(JoinStatus.DE.responseVo);
+            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(new ResponseVo(JoinStatus.DE));
         } else if(memberService.existsByPhone(member.getPhone())){
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(JoinStatus.DP.responseVo);
+            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(new ResponseVo(JoinStatus.DP));
         }
 
         MemberDto memberDto = modelMapper.map(member, MemberDto.class);
@@ -63,7 +57,7 @@ public class MemberController {
             memberService.tempJoin(memberDto);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(EmailAuthStatus.SU.responseVo);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo(EmailAuthStatus.SU));
     }
 
     @PostMapping("/join/email-certify")
@@ -72,9 +66,9 @@ public class MemberController {
         if(memberDto != null){
             memberService.join(memberDto);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JoinStatus.FA.responseVo);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseVo(JoinStatus.FA));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(JoinStatus.SU.responseVo);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo(JoinStatus.SU));
     }
 
     @PostMapping("/user-info")
@@ -95,7 +89,7 @@ public class MemberController {
         if(memberId != null){
             return ResponseEntity.status(HttpStatus.OK).body(memberId);
         } else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseStatus.FA.responseVo);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseVo(ResponseStatus.FA));
         }
     }
 
@@ -104,17 +98,6 @@ public class MemberController {
         MemberDto memberDto = modelMapper.map(requestMember, MemberDto.class);
         ResponseMember updateMember = memberService.updateMember(memberDto);
         return ResponseEntity.status(HttpStatus.OK).body(updateMember);
-    }
-
-    @PostMapping("/member/wish")
-    public ResponseEntity<List<ResponseWishList>> memberWish(HttpServletRequest request){
-        String token = request.getHeader("Authorization").replace("Bearer ","");
-        String email = jwtUil.getEmail(token);
-        Long memberId = memberService.findIdByEmail(email);
-
-        List<ResponseWishList> responseWishLists = wishClient.memberWish(memberId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(responseWishLists);
     }
 
 }
