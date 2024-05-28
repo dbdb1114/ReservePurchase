@@ -6,7 +6,6 @@ import com.reservation.productservice.service.ProductService;
 import com.reservation.productservice.vo.response.ResponseProduct;
 import com.reservation.productservice.vo.response.status.ResponseStatus;
 import com.reservation.productservice.vo.response.status.ResponseVo;
-import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.Map;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,12 +34,21 @@ public class ProductController {
         this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/{categoryId}/list")
-    public ResponseEntity<ResponseVo> productList(@PathVariable Integer categoryId, @RequestBody @Nullable Paging paging) {
-        List<ProductDto> productDtos = productService.productList(categoryId, paging);
+    @GetMapping("/{categoryId}/list/{page}/{limit}/{orderBy}/{offset}")
+    public ResponseEntity<ResponseVo> productList(@PathVariable Integer categoryId, @PathVariable Integer page, @PathVariable Integer limit,
+                                                  @PathVariable String orderBy, @PathVariable String offset) {
+
+        Paging paging = new Paging();
+        paging.setPage(page);
+        paging.setLimit(limit);
+        paging.setOrderBy(orderBy);
+        paging.setDirection(offset);
+
+        List<ResponseProduct> productDtos = productService.productList(categoryId, paging)
+                .stream().map(dto->modelMapper.map(dto,ResponseProduct.class)).toList();
 
         if(!productDtos.isEmpty()){
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU, productDtos));
         } else {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseVo<>(ResponseStatus.FA));
         }
@@ -53,7 +60,7 @@ public class ProductController {
 
         if(productDto != null){
             ResponseProduct responseProduct = modelMapper.map(productDto, ResponseProduct.class);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU,responseProduct));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseVo<>(ResponseStatus.FA));
         }
