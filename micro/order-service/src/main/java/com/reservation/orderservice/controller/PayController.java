@@ -9,6 +9,7 @@ import com.reservation.orderservice.vo.request.RequestOrder;
 import com.reservation.orderservice.vo.response.ResponseOrder;
 import com.reservation.orderservice.vo.response.ResponseStatus;
 import com.reservation.orderservice.vo.response.ResponseVo;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -32,13 +33,14 @@ public class PayController {
     OrderService orderService;
 
     @PatchMapping("/process")
-    public ResponseEntity<ResponseVo> payProcess(@RequestBody RequestOrder requestOrder){
+    public ResponseEntity<ResponseVo> payProcess(HttpServletRequest request, @RequestBody RequestOrder requestOrder){
+        String authorization = request.getHeader("Authorization");
         // 20% 이탈 구현
         if(inTwentyPercent.getAsBoolean()) {
             /**
              * 재고 수정 및 해당 주문 삭제처리
              * */
-            stockClient.increaseStock(requestOrder.getItems());
+            stockClient.increaseStock(authorization, requestOrder.getItems());
             orderService.deleteOrder(requestOrder);
             return twentyFailResponse.get();
         }
@@ -54,13 +56,15 @@ public class PayController {
     }
 
     @PatchMapping("/complete")
-    public ResponseEntity<ResponseVo> payComplete(@RequestBody RequestOrder requestOrder){
+    public ResponseEntity<ResponseVo> payComplete(HttpServletRequest request, @RequestBody RequestOrder requestOrder){
+        String authorization = request.getHeader("Authorization");
+
         // 20% 이탈 구현
         if(inTwentyPercent.getAsBoolean()) {
             /**
              * 재고 수정 및 해당 주문 삭제 처리
              * */
-            stockClient.increaseStock(requestOrder.getItems());
+            stockClient.increaseStock(authorization, requestOrder.getItems());
             orderService.deleteOrder(requestOrder);
             return twentyFailResponse.get();
         }
