@@ -23,7 +23,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,22 +45,20 @@ public class OrderController {
         Long memberId = memberClient.memberId(authorization);
 
         List<Order> orders = orderService.orderList(memberId);
-        if(orders.size() > 0){
+        if(!orders.isEmpty()) {
             List<ResponseOrder> orderList = orders.stream()
                     .map(order -> modelMapper.map(order, ResponseOrder.class))
                     .collect(Collectors.toList());
-            ResponseVo<List<ResponseOrder>> responseVo = new ResponseVo<>(ResponseStatus.SU);
-            responseVo.setData(orderList);
+            ResponseVo<List<ResponseOrder>> responseVo = new ResponseVo<>(ResponseStatus.SU, orderList);
             return ResponseEntity.status(HttpStatus.OK).body(responseVo);
         } else {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseVo<>(ResponseStatus.EC));
         }
     }
 
-    @PostMapping("/detail/{orderId}")
-    public ResponseEntity<ResponseVo> orderDetail(@PathVariable Long orderId){
-
-        Order order = orderService.orderDetail(orderId);
+    @PostMapping("/detail")
+    public ResponseEntity<ResponseVo> orderDetail(@RequestBody RequestOrder requestOrder) {
+        Order order = orderService.orderDetail(requestOrder.getId());
         if(order != null){
             ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<ResponseOrder>(ResponseStatus.SU).setData(responseOrder));
@@ -82,6 +79,7 @@ public class OrderController {
         List<Long> idList = orderItemList.stream().map(OrderItemDto::getProductId).collect(Collectors.toList());
         Map<Long,ProductDto> productInfo = productClient.productInfo(idList);
 
+        // 재고조회 후 처리
         orderItemList.stream().forEach(dto -> {
             Integer price = productInfo.get(dto.getProductId()).getPrice();
             dto.calculatePrice(price);
@@ -90,21 +88,21 @@ public class OrderController {
         Order order = orderService.makeOrder(orderDto, orderItemList);
 
         if(order != null){
-            ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
-            stockClient.decreaseStock(responseOrder.getItems());
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<ResponseOrder>(ResponseStatus.SU));
+            ResponseOrder completedOrder = modelMapper.map(order, ResponseOrder.class);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.SU, completedOrder));
         } else {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseVo<>(ResponseStatus.FA));
         }
     }
 
     @PatchMapping("/cancel")
-    public ResponseEntity<ResponseVo> cancelOrder(@RequestBody RequestOrder requestOrder) {
+    public ResponseEntity<ResponseVo> cancelOrder(HttpServletRequest request, @RequestBody RequestOrder requestOrder) {
+        String authorization = request.getHeader("Authorization");
         Order order = orderService.makeWithDrawl(requestOrder);
         ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
 
         if(responseOrder.getStatus() == OrderStatus.WITHDRAWAL){
-            stockClient.increaseStock(responseOrder.getItems());
+            stockClient.increaseStock(authorization, responseOrder.getItems());
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<ResponseOrder>(ResponseStatus.SU).setData(responseOrder));
         }else{
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseVo<>(ResponseStatus.FA));
