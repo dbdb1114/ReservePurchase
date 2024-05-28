@@ -16,6 +16,12 @@ public class ResponseVo<T> {
         this.responseMessage = status.responseMessage;
     }
 
+    public ResponseVo(ResponseStatus status, T data) {
+        this.responseCode = status.responseCode;
+        this.responseMessage = status.responseMessage;
+        this.data = data;
+    }
+
     public ResponseVo setData(T data){
         this.data = data;
         return this;
