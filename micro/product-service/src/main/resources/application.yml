@@ -19,6 +19,14 @@ spring:
         highlight_sql: true
         use_sql_comments: true
     defer-datasource-initialization: true
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  cache:
+    redis:
+      cache-null-values: true
+    type: redis
 
 logging:
   level:
@@ -34,3 +42,4 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://127.0.0.1:8888/eureka
+
